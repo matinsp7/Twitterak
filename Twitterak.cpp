@@ -28,7 +28,7 @@ void Twitterak::signup (){
         string username;
         cin >> username;
         if (username[0] == '@'){    //to remove @
-            username.replace(0 , 1 , "");
+            username.erase(0);
         }
 
         for (int i=0 ; i<username.size() ; i++){    //touppercase username
@@ -56,26 +56,39 @@ void Twitterak::signup (){
 
 //-----------------------------------------------------------------
 
-void Twitterak::check_login (){
+void Twitterak::check_validation (){
     string Username;
     string Password;
     bool flag = 0;
     while (!flag){
         cout << "$ Username : ";
         cin >> Username;
+        if (Username[0] == '@'){    //to remove @
+            Username.erase(0);
+        }
+        for (int i=0 ; i<Username.size() ; i++){    //touppercase username
+            Username[i] = toupper(Username[i]);
+        }
         cout << "$ Password : ";
         cin >> Password;
         int accsize = accounts.size();
         for (int i=0 ; i<accsize ; i++){
             if (Username == accounts.at(i).get_username()){
                 if (Password == accounts.at(i).get_password()){
-                    cout << "Excelent";
+                    cout << "Excelent" << endl;
+                    flag = 1;
+                    break;
                 }
                 else {
-                    cout << "Usename or Password is incorrect";
+                    cout << "! Usename or Password is incorrect !" << endl;
+                    break;
                 }
             }
+            else if (i == accsize-1){
+                cout << "! Usename or Password is incorrect !" << endl;
+            }
         }
+
     }
 }
 void Twitterak::run(){
@@ -99,6 +112,10 @@ void Twitterak::run(){
 
         if (option == "SIGNUP"){
             signup();
+        }
+
+        else if (option == "LOGIN"){
+            check_validation();
         }
 
         else if (option == "CLEAR"){

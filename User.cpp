@@ -48,7 +48,7 @@ string User::get_username(){
     return username;
 }
 
-void User::set_password(std::string passwprd){
+void User::set_password(std::string password){
     this -> password = password;
 }
 

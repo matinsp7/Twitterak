@@ -7,7 +7,7 @@
 class Twitterak {
     public:
     void signup ();
-    void check_login();
+    void check_validation();
     void run ();
     private:
     static std::vector<User> accounts;
