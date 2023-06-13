@@ -11,24 +11,17 @@ using namespace std;
 
 vector <User> Twitterak::accounts;
 
-
-//------------------------------------------------------------
-
-
 void Twitterak::signup (Terminal t){
     User new_user;
 
-    cout << "Thank you for your choice." << endl;
+    t.sendMessage("Thank you for your choice.");
 
-    cout << "$ Name : ";
-    string name;
-    cin >> name;
+    string name = t.getStringValue("Name");
     new_user.set_name(name);
 
     while (1) {
-        cout << "$ Username : ";
-        string username;
-        cin >> username;
+        string username = t.getStringValue("Username");
+
         if (username[0] == '@'){    //to remove @
             username.erase(0);
         }
@@ -46,163 +39,130 @@ void Twitterak::signup (Terminal t){
         }
     }
 
-    cout << "$ password : ";
-    string password;
-    cin >> password;
+    string password = t.getStringValue("Password");
     new_user.set_password(password);
 
-    cout << "$ Phone number : ";
-    string Phonenumber;
-    cin >> Phonenumber;
+    string Phonenumber = t.getStringValue("Phone number");
     new_user.set_PhoneNumber(Phonenumber);
 
     accounts.push_back (new_user);
 
-    cout << "* Registration was successful." << endl;
+    t.sendSuccessMessage("Registration was successful.");
 
     int accsize = accounts.size() -1;
     login (accsize , t);
 }
 
-//-----------------------------------------------------------------
-
 void Twitterak::check_validation (Terminal t){
-    string Username;
-    string Password;
+    string username;
+    string password;
     bool flag = 0;
     while (!flag){
-        cout << "$ Username : ";
-        cin >> Username;
-        if (Username[0] == '@'){    //to remove @
-            Username.erase(0);
+
+        username = t.getStringValue("Username");
+
+        if (username[0] == '@'){    //to remove @
+            username.erase(0);
         }
-        for (int i=0 ; i<Username.size() ; i++){    //tolowercase username
-            Username[i] = tolower(Username[i]);
-        }
-        cout << "$ Password : ";
-        cin >> Password;
+
+        password = t.getStringValue("Password");
         int accsize = accounts.size();
         for (int i=0 ; i<accsize ; i++){
-            if (Username == accounts.at(i).get_username()){
-                if (Password == accounts.at(i).get_password()){
+            if (username == accounts.at(i).get_username()){
+                if (password == accounts.at(i).get_password()){
                     flag = 1;
                     login (i , t);
                     break;
                 }
                 else {
-                    cout << "! Usename or Password is incorrect !" << endl;
+                    t.throwError("Usename or Password is incorrect !");
                     break;
                 }
             }
             else if (i == accsize-1){
-                cout << "! Usename or Password is incorrect !" << endl;
+                t.throwError("Usename or Password is incorrect !");
             }
         }
 
     }
 }
 
-//---------------------------------------------------------------------
 
 
-
-inline void profile (int &i , vector <User> accounts){
+inline void profile (int &i , vector <User> accounts, Terminal t){
     User user = accounts.at(i);
-    cout << "Name : " << user.get_name() << endl;
-    cout << "Username : " << user.get_username() << endl;
-    cout << "bio : " << user.get_bio() << endl;
-    cout << "Date of birth : " << user.get_DateOfBirth().get_year() << "/";
-    cout << user.get_DateOfBirth().get_month() << "/";
-    cout << user.get_DateOfBirth().get_day() << endl;
-    cout << "Phone number : " << user.get_PhoneNumber() << endl;
-    cout << "Header : " << user.get_header() << endl;
+    t.sendMessage("Name : " + user.get_name()+'\n');
+    t.sendMessage("Username : " + user.get_username()+'\n');
+    t.sendMessage("bio : " + user.get_bio()+'\n');
+    t.sendMessage("Date of birth : " + to_string(user.get_DateOfBirth().get_year()) + "/");
+    t.sendMessage(to_string(user.get_DateOfBirth().get_month()) + "/");
+    t.sendMessage(to_string(user.get_DateOfBirth().get_day())+'\n');
+    t.sendMessage("Phone number : " + user.get_PhoneNumber()+'\n');
+    t.sendMessage("Header : " + user.get_header()+'\n');
 }
 
 
 
 void Twitterak::login(int &i , Terminal t){
+
     User user = accounts.at(i);
-    int accsize = accounts.size();
-    while (true) {
-        vector <string> args = t.getCommand();
+
+    vector<string> args;
+    while (1) {
+        t.sendMessage("> @" + user.get_username());
+
+        args.clear();
+        args = t.getCommand();
 
         args.at(0) = t.toLower(args.at(0));
 
-        cout << "@" << user.get_username() << " ";
-
-        if (args.at(0) == "me"){
-           profile( i , accounts);
+        if ( args.at(0) == "profile" || args.at(0) == "me")
+        {
+           profile( i , accounts, t);
         }
-
-
-        else if (args.at(0) == "profile"){
-            if (args.size() == 2){
-                if (args.at(1).at(0) == '@' ){  //to remove @
-                    args.at(1).erase(0);
-                }
-                for (int i=0 ; i<accsize ; i++){
-                    if (accounts.at(i).get_username() == args.at(1)){
-                        profile(i , accounts);
-                        break;
-                    }
-                }
-            }
-            else{
-                profile(i , accounts);
-            }
+        else if ( args.at(0) == "edit")
+        {
+            profile(i , accounts, t);
         }
-
-
-        else if ( args.at(0) == "edit"){
-            profile(i , accounts);
-        }
-
-
-        else if ( args.at(0) == "clar"){
+        else if ( args.at(0) == "cls")
+        {
             system ("cls");
         }
-
-
         else if ( args.at(0) == "logout"){
             break;
         }
-
-
-
     }
 }
 
-//----------------------------------------------------------------------
-
 
 void Twitterak::run(){
-    Terminal t(cin , cout);
+
     HWND console = GetConsoleWindow();
     MoveWindow(console, 50, 50, 1200, 700, true);
+
+    Terminal t(cin , cout);
 
     splashScreen screen;
     screen.runSplashScreen("res/splashTextAsciiArt.txt",9,"Welcome!",11 , t);
 
-    system("cls");
-
-    string option;
+    vector<string> args;
     while (1){
-        cout << "> ";
-        cin >> option;
-        int size = option.size();
-        for (int i=0 ; i<size ; i++){   //to uppercase option
-            option[i] = toupper(option[i]);
-        }
+        
+        args.clear();
+        args = t.getCommand();
 
-        if (option == "SIGNUP"){
+        args.at(0) = t.toLower(args.at(0));
+
+        if (args[0] == "signup")
+        {
             signup(t);
         }
-
-        else if (option == "LOGIN"){
+        else if (args[0] == "login")
+        {
             check_validation(t);
         }
-
-        else if (option == "CLEAR"){
+        else if (args[0] == "cls")
+        {
             system("cls");
         }
     }

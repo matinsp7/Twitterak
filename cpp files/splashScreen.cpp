@@ -50,8 +50,3 @@ void splashScreen::runSplashScreen(std::string address,int splashTextColor,std::
     printSplashTextUpDownAnimation(address,splashTextColor, t);
     printGuideMessage(messageTxt,messageTxtColor, t);
 }
-
-// int main(){
-//     splashScreen s;
-//     s.runSplashScreen("../res/splashTextAsciiArt.txt",9,"Welcome!\n",11);
-// }
