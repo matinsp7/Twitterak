@@ -102,6 +102,22 @@ void Twitterak::check_validation (){
 
 //---------------------------------------------------------------------
 
+
+
+inline void profile (int &i , vector <User> accounts){
+    User user = accounts.at(i);
+    cout << "Name : " << user.get_name() << endl;
+    cout << "Username : " << user.get_username() << endl;
+    cout << "bio : " << user.get_bio() << endl;
+    cout << "Date of birth : " << user.get_DateOfBirth().get_year() << "/";
+    cout << user.get_DateOfBirth().get_month() << "/";
+    cout << user.get_DateOfBirth().get_day() << endl;
+    cout << "Phone number : " << user.get_PhoneNumber() << endl;
+    cout << "Header : " << user.get_header() << endl;
+}
+
+
+
 void Twitterak::login(int &i){
     while (true) {
         User user = accounts.at(i);
@@ -116,14 +132,12 @@ void Twitterak::login(int &i){
 
 
         if (option == "PROFILE" || option == "ME"){
-            cout << "Name : " << user.get_name() << endl;
-            cout << "Username : " << user.get_username() << endl;
-            cout << "bio : " << user.get_bio() << endl;
-            cout << "Date of birth : " << user.get_DateOfBirth().get_year() << "/";
-            cout << user.get_DateOfBirth().get_month() << "/";
-            cout << user.get_DateOfBirth().get_day() << endl;
-            cout << "Phone number : " << user.get_PhoneNumber() << endl;
-            cout << "Header : " << user.get_header() << endl;
+           profile( i , accounts);
+        }
+
+
+        else if (option == "EDIT"){
+            profile(i , accounts);
         }
 
 
