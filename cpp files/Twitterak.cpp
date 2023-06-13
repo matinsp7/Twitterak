@@ -15,7 +15,7 @@ vector <User> Twitterak::accounts;
 //------------------------------------------------------------
 
 
-void Twitterak::signup (){
+void Twitterak::signup (Terminal t){
     User new_user;
 
     cout << "Thank you for your choice." << endl;
@@ -61,12 +61,12 @@ void Twitterak::signup (){
     cout << "* Registration was successful." << endl;
 
     int accsize = accounts.size() -1;
-    login (accsize);
+    login (accsize , t);
 }
 
 //-----------------------------------------------------------------
 
-void Twitterak::check_validation (){
+void Twitterak::check_validation (Terminal t){
     string Username;
     string Password;
     bool flag = 0;
@@ -86,7 +86,7 @@ void Twitterak::check_validation (){
             if (Username == accounts.at(i).get_username()){
                 if (Password == accounts.at(i).get_password()){
                     flag = 1;
-                    login (i);
+                    login (i , t);
                     break;
                 }
                 else {
@@ -120,7 +120,7 @@ inline void profile (int &i , vector <User> accounts){
 
 
 
-void Twitterak::login(int &i){
+void Twitterak::login(int &i , Terminal t){
     User user = accounts.at(i);
     while (true) {
         vector <string> args = t.getCommand();
@@ -176,11 +176,11 @@ void Twitterak::run(){
         }
 
         if (option == "SIGNUP"){
-            signup();
+            signup(t);
         }
 
         else if (option == "LOGIN"){
-            check_validation();
+            check_validation(t);
         }
 
         else if (option == "CLEAR"){

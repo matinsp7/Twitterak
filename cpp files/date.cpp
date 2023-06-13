@@ -1,28 +1,28 @@
-#include <iostream>
 #include <stdexcept>
 #include "../header files/date.h"
+#include "../header files/terminal.h"
 
 using namespace std;
 
 Date::Date(){}
 
-Date::Date (int &day , int &month , int &year , bool &flag){
+Date::Date (int &day, int &month, int &year, bool &flag, Terminal t){
     // Day validation
         try {
             set_day (day);
             flag = 1;
         }
         catch (out_of_range &a) {
-            cout <<  a.what() << endl;
+            t.throwError(a.what());
         }
     if (flag){
          // month validation
-         try {
+        try {
             set_month (month);
         }
         catch (out_of_range &a) {
             flag = 0;
-            cout <<  a.what() << endl;
+            t.throwError(a.what());
         }
     }
     if (flag){
@@ -32,7 +32,7 @@ Date::Date (int &day , int &month , int &year , bool &flag){
         }
         catch (out_of_range &a) {
             flag = 0;
-            cout <<  a.what() << endl;
+            t.throwError(a.what());
         }
     }
 }
@@ -43,7 +43,7 @@ void Date::set_day(int day){
     }
     else {
         throw out_of_range(
-            "! <Day> input is not correct! Please try again."
+            "<Day> input is not correct! Please try again."
         );
     }
 }
@@ -54,7 +54,7 @@ void Date::set_month(int month){
     }
     else {
     throw out_of_range(
-        "! <month> input is not correct! Please try again."
+        "<month> input is not correct! Please try again."
     );
     }
 }
@@ -65,7 +65,7 @@ void Date::set_year(int year){
     }
     else {
     throw out_of_range(
-        "! <Year> input is not correct! Please try again."
+        "<Year> input is not correct! Please try again."
     );
     }
 }
