@@ -4,7 +4,7 @@
 #include <Windows.h>
 
 #include "../header files/splashScreen.h"
-#include "../header files/user.h"
+#include "../header files/User.h"
 
 
 using namespace std;
@@ -38,7 +38,7 @@ void Twitterak::signup (Terminal t){
         }
 
         try{
-            new_user.set_username(username , accounts);
+            new_user.set_username(username , accounts , t);
             break;
         }
         catch(invalid_argument &err){
@@ -122,29 +122,48 @@ inline void profile (int &i , vector <User> accounts){
 
 void Twitterak::login(int &i , Terminal t){
     User user = accounts.at(i);
+    int accsize = accounts.size();
     while (true) {
         vector <string> args = t.getCommand();
 
         args.at(0) = t.toLower(args.at(0));
 
+        cout << "@" << user.get_username() << " ";
 
-
-        if ( args.at(0) == "PROFILE" || args.at(0) == "ME"){
+        if (args.at(0) == "me"){
            profile( i , accounts);
         }
 
 
-        else if ( args.at(0) == "EDIT"){
+        else if (args.at(0) == "profile"){
+            if (args.size() == 2){
+                if (args.at(1).at(0) == '@' ){  //to remove @
+                    args.at(1).erase(0);
+                }
+                for (int i=0 ; i<accsize ; i++){
+                    if (accounts.at(i).get_username() == args.at(1)){
+                        profile(i , accounts);
+                        break;
+                    }
+                }
+            }
+            else{
+                profile(i , accounts);
+            }
+        }
+
+
+        else if ( args.at(0) == "edit"){
             profile(i , accounts);
         }
 
 
-        else if ( args.at(0) == "CLEAR"){
+        else if ( args.at(0) == "clar"){
             system ("cls");
         }
 
 
-        else if ( args.at(0) == "LOGOUT"){
+        else if ( args.at(0) == "logout"){
             break;
         }
 

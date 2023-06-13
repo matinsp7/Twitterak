@@ -15,9 +15,7 @@ void User::set_name(string name){
 string User::get_name() const{
     return name;
 }
-void User::set_username(string username , vector <User> accounts, Terminal t){
-
-void User::set_username(string username , vector <User> accounts)
+void User::set_username(string username , vector <User> accounts, Terminal t)
 {
 
     int accsize = accounts.size();
