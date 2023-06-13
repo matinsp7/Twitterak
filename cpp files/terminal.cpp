@@ -8,7 +8,7 @@
 #include <unistd.h>
 #endif
 
-#include "terminal.h"
+#include "../header files/terminal.h"
 
 
     Terminal::Terminal( std::istream& iStream, std::ostream& oStream )
@@ -111,36 +111,30 @@
         return val;
     }
 
-    void Terminal::throwEror(std::string messege)
+    void Terminal::throwEror(std::string message)
     {
-        print("! " + messege);
+        print("! " + message);
         output << std::endl;
     }
 
-    void Terminal::sendSuccessMessege(std::string messege)
+    void Terminal::sendSuccessMessage(std::string message)
     {
-        print("* " + messege);
+        print("* " + message);
         output << std::endl;
     }
 
-    std::string Terminal::sendQuestion(std::string messege)
+    std::string Terminal::sendQuestion(std::string message)
     {
-        print("? " + messege + ": ");
-
-        std::vector<std::string> answer = getCommand();
+        print("? " + message + ": ");
 
         std::string ans;
-        for( unsigned i{0}; i < answer.size(); ++i )
-        {
-            ans += answer[i];
-        }
-
+        input >> ans;
         return ans;
     }
 
-    void Terminal::sendMessege(std::string messege)
+    void Terminal::sendMessage(std::string message)
     {
-        print(messege);
+        print(message);
         output << std::endl;
     }
 

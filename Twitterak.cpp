@@ -2,7 +2,8 @@
 #include <iostream>
 #include <string>
 #include <Windows.h>
-#include "splashScreen.hpp"
+
+//#include "splashScreen.cpp"
 #include "User.h"
 
 using namespace std;
@@ -95,9 +96,7 @@ void Twitterak::run(){
     HWND console = GetConsoleWindow();
     MoveWindow(console, 50, 50, 1200, 700, true);
 
-    runSplashScreen("splashTextAsciiArt.txt",9,"Welcome!",11);
-
-    cout <<  tolower('A');
+    runSplashScreen("res/splashTextAsciiArt.txt",9,"Welcome!",11);
 
     system("cls");
 

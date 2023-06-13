@@ -1,10 +1,10 @@
-#include <iostream>
-#include <stdexcept>
 
-#ifndef Date_h
-#define Date_h
+#ifndef Date_H
+#define Date_H
 class Date {
-    public:
+
+public:
+
     Date();
     Date (int& , int&  , int& , bool&);
     void set_day(int);
@@ -13,7 +13,9 @@ class Date {
     int get_day() const;
     int get_month() const;
     int get_year() const;
-    private:
+
+private:
+
     int day;
     int month;
     int year;
