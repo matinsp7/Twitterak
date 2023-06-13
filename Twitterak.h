@@ -8,6 +8,7 @@ class Twitterak {
     public:
     void signup ();
     void check_validation();
+    void login(int&); // int is the index of accvec
     void run ();
     private:
     static std::vector<User> accounts;
