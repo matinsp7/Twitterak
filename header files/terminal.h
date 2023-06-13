@@ -7,8 +7,9 @@ class Terminal{
 public:
     Terminal(std::istream& iStream, std::ostream& oStream);
     std::vector<std::string> getCommand();
-    std::string getValue(std::string valueName);
-    void throwEror(std::string message);
+    std::string getStringValue(std::string valueName);
+    int getIntValue(std::string valueName);
+    void throwError(std::string message);
     void sendSuccessMessage(std::string message);
     std::string sendQuestion(std::string message);
     void sendMessage(std::string message);

@@ -100,10 +100,30 @@
 
     }
 
-    std::string Terminal::getValue(std::string valueName)
+    void Terminal::print(std::string text)
+    {
+        if(smooth)
+        {
+            unsigned stop = 1;
+
+            for(unsigned i{0}; i < text.length(); ++i)
+            {
+                output << text[i];
+                if(stop % 2 == 0)
+                    Sleep(1);
+                stop++;
+            }
+        }
+        else
+        {
+            output << text;
+        }
+
+    }
+
+    std::string Terminal::getStringValue(std::string valueName)
     {
         print("$ " + valueName + ": ");
-
 
         std::string val;
         getline(input, val);
@@ -111,7 +131,17 @@
         return val;
     }
 
-    void Terminal::throwEror(std::string message)
+    int Terminal::getIntValue(std::string valueName){
+
+        print("$ " + valueName + ": ");
+
+        int val;
+        input >> val;
+
+        return val;
+    }
+
+    void Terminal::throwError(std::string message)
     {
         print("! " + message);
         output << std::endl;
@@ -148,26 +178,7 @@
         return text;
     }
 
-    void Terminal::print(std::string text)
-    {
-        if(smooth)
-        {
-            unsigned stop = 1;
-
-            for(unsigned i{0}; i < text.length(); ++i)
-            {
-                output << text[i];
-                if(stop % 2 == 0)
-                    Sleep(1);
-                stop++;
-            }
-        }
-        else
-        {
-            output << text;
-        }
-
-    }
+   
 
     void Terminal::setSmooth(bool value){
         smooth = value;

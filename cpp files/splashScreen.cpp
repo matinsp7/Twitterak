@@ -7,6 +7,7 @@
 
 #endif
 
+#include "../header files/terminal.h"
 #include "../header files/splashScreen.h"
 
 splashScreen::splashScreen(){}
@@ -33,7 +34,7 @@ void splashScreen::printSplashTextUpDownAnimation(std::string address,int color,
     }
     else                                              //Return error
     {
-	    t.throwEror("SplashText File does not exist.");
+	    t.throwError("SplashText File does not exist.");
     }
     
     Reader.close ();                                  //close file
@@ -44,10 +45,10 @@ void splashScreen::printGuideMessage(std::string messageTxt,int messageTxtColor,
     t.sendMessage(messageTxt +'\n');
 }
 
-void splashScreen::runSplashScreen(std::string address,int splashTextColor,std::string messageTxt,int messageTxtColor){
+void splashScreen::runSplashScreen(std::string address,int splashTextColor,std::string messageTxt,int messageTxtColor, Terminal t){
     hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    printSplashTextUpDownAnimation(address,splashTextColor);
-    printGuideMessage(messageTxt,messageTxtColor);
+    printSplashTextUpDownAnimation(address,splashTextColor, t);
+    printGuideMessage(messageTxt,messageTxtColor, t);
 }
 
 // int main(){
