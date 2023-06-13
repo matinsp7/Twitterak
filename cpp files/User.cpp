@@ -1,8 +1,10 @@
-#include "User.h"
-#include "Date.h"
 #include <iostream>
 #include <vector>
 #include <string>
+
+#include "../header files/Date.h"
+#include "../header files/User.h"
+#include "terminal.cpp"
 
 using namespace std;
 
@@ -10,40 +12,38 @@ void User::set_name(string name){
     this->name = name;
 }
 
+<<<<<<< HEAD:cpp files/User.cpp
+void User::set_username(string username , vector <User> accounts, Terminal t){
+=======
 string User::get_name(){
     return name;
 }
 
 
 void User::set_username(string username , vector <User> accounts){
+>>>>>>> e1728afadd55aa8f9b102378cb4d16b8436cffc7:User.cpp
 
     int accsize = accounts.size();
     for (int i=0 ; i<accsize ; i++){
         if (accounts.at(i).get_username() == username){
-            throw invalid_argument (
-                "! Username already taken ! Please try again :"
-            );
+            t.throwEror("Username already taken! Please try again :");
         }
     }
 
     int usersize = username.size();
     if (usersize < 5){
-        throw invalid_argument (
-                "! Username must have at least 5 characters ! Please try again :"
-            );
+        t.throwEror("Username must have at least 5 characters! Please try again :");
     }
 
     for (int i=0 ; i<usersize ; i++){
-        if (!isalnum(username[i])){
-            throw invalid_argument (
-                "! Username can only contains letters and numbers ! Please try again :"
-            );
+        if (!isalnum(username[i]))
+            t.throwEror("Username can only contains letters and numbers! Please try again :")
         }
     }
 
     if (isdigit(username[0])){
         throw invalid_argument (
-                "! The beginning of the username cannot be a number ! Please try again :"
+            t.throwEror("The beginning of the username cannot be a number! Please try again :")
         );
     }
     this -> username = username;
