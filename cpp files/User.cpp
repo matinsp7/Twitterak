@@ -2,9 +2,9 @@
 #include <vector>
 #include <string>
 
-#include "../header files/Date.h"
+#include "../header files/date.h"
 #include "../header files/User.h"
-#include "terminal.cpp"
+#include "../header files/terminal.h"
 
 using namespace std;
 
@@ -15,9 +15,7 @@ void User::set_name(string name){
 string User::get_name() const{
     return name;
 }
-void User::set_username(string username , vector <User> accounts, Terminal t){
-
-void User::set_username(string username , vector <User> accounts)
+void User::set_username(string username , vector <User> accounts, Terminal t)
 {
 
     int accsize = accounts.size();

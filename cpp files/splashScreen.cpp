@@ -12,13 +12,13 @@
 
 splashScreen::splashScreen(){}
 
-void splashScreen::printLine(std::ifstream& Reader,int color){
+void splashScreen::printLine(std::ifstream& Reader,int color,Terminal t){
     std::string tempLine;                  //Temp line
     std::getline (Reader , tempLine);        //Get temp line
     tempLine += '\n';                      //Add newline character
     
     SetConsoleTextAttribute(hOutput,color);
-    std::cout << tempLine;
+    t.sendMessage(tempLine);
     Sleep(100);
 }
 
@@ -29,7 +29,7 @@ void splashScreen::printSplashTextUpDownAnimation(std::string address,int color,
     {
         while (Reader.good())
         {
-            printLine(Reader,color);
+            printLine(Reader,color,t);
         }
     }
     else                                              //Return error

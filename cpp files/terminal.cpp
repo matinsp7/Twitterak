@@ -1,23 +1,23 @@
 #include <fstream>
 #include <string>
 #include <vector>
-
+#include <iostream>
 #ifdef _WIN32
 #include <Windows.h>
 #else
 #include <unistd.h>
 #endif
 
+using namespace std;
 #include "../header files/terminal.h"
 
 
     Terminal::Terminal( std::istream& iStream, std::ostream& oStream )
     : input{iStream}, output{oStream} {}
-
     
-    std::vector<std::string> Terminal::getCommand()
+    std::vector<std::string> Terminal::getCommand(std::string prefix)
     {
-        print("> ");
+        print(prefix);
 
         std::vector<std::string> args;
 
@@ -95,7 +95,7 @@
             return args;
         else
         {
-            return getCommand();
+            return getCommand(prefix);
         }
 
     }
@@ -165,7 +165,6 @@
     void Terminal::sendMessage(std::string message)
     {
         print(message);
-        output << std::endl;
     }
 
     std::string Terminal::toLower(std::string text) const 

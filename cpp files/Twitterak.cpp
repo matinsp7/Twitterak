@@ -14,7 +14,7 @@ vector <User> Twitterak::accounts;
 void Twitterak::signup (Terminal t){
     User new_user;
 
-    t.sendMessage("Thank you for your choice.");
+    t.sendMessage("Thank you for your choice.\n");
 
     string name = t.getStringValue("Name");
     new_user.set_name(name);
@@ -31,7 +31,7 @@ void Twitterak::signup (Terminal t){
         }
 
         try{
-            new_user.set_username(username , accounts);
+            new_user.set_username(username , accounts, t);
             break;
         }
         catch(invalid_argument &err){
@@ -109,10 +109,9 @@ void Twitterak::login(int &i , Terminal t){
 
     vector<string> args;
     while (1) {
-        t.sendMessage("> @" + user.get_username());
 
         args.clear();
-        args = t.getCommand();
+        args = t.getCommand("> @" + user.get_username() +" >");
 
         args.at(0) = t.toLower(args.at(0));
 
@@ -149,7 +148,7 @@ void Twitterak::run(){
     while (1){
         
         args.clear();
-        args = t.getCommand();
+        args = t.getCommand("> ");
 
         args.at(0) = t.toLower(args.at(0));
 

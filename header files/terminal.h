@@ -6,7 +6,7 @@
 class Terminal{
 public:
     Terminal(std::istream& iStream, std::ostream& oStream);
-    std::vector<std::string> getCommand();
+    std::vector<std::string> getCommand(std::string);
     std::string getStringValue(std::string valueName);
     int getIntValue(std::string valueName);
     void throwError(std::string message);

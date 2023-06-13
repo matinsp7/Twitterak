@@ -20,7 +20,7 @@ public:
     void runSplashScreen(std::string address,int splashTextColor,std::string messageTxt,int messageTxtColor, Terminal t);
     void printSplashTextUpDownAnimation(std::string address,int color, Terminal t);
     void printGuideMessage(std::string messageTxt,int messageTxtColor, Terminal t);
-    void printLine(std::ifstream& Reader,int color);
+    void printLine(std::ifstream& Reader,int color, Terminal t);
 
 private:
 
