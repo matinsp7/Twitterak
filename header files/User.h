@@ -9,7 +9,7 @@
 class User {
     public:
     void set_name(std::string);
-    std::string get_name();
+    std::string get_name() const;
     void set_username(std::string , std::vector<User>);
     std::string get_username() const;
     void set_bio(std::string, Terminal);
