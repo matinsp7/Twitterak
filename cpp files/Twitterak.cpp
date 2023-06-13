@@ -1,10 +1,11 @@
-#include "Twitterak.h"
+#include "../header files/Twitterak.h"
 #include <iostream>
 #include <string>
 #include <Windows.h>
 
-//#include "splashScreen.cpp"
-#include "User.h"
+#include "../header files/splashScreen.h"
+#include "../header files/user.h"
+
 
 using namespace std;
 
@@ -120,34 +121,30 @@ inline void profile (int &i , vector <User> accounts){
 
 
 void Twitterak::login(int &i){
+    User user = accounts.at(i);
     while (true) {
-        User user = accounts.at(i);
-        string option;
-        cout << ">@" << user.get_username() << " ";
-        cin >> option;
-        int size = option.size();
-        for (int i=0 ; i<size ; i++){   //to uppercase option
-            option[i] = toupper(option[i]);
-        }
+        vector <string> args = t.getCommand();
+
+        args.at(0) = t.toLower(args.at(0));
 
 
 
-        if (option == "PROFILE" || option == "ME"){
+        if ( args.at(0) == "PROFILE" || args.at(0) == "ME"){
            profile( i , accounts);
         }
 
 
-        else if (option == "EDIT"){
+        else if ( args.at(0) == "EDIT"){
             profile(i , accounts);
         }
 
 
-        else if (option == "CLEAR"){
+        else if ( args.at(0) == "CLEAR"){
             system ("cls");
         }
 
 
-        else if (option == "LOGOUT"){
+        else if ( args.at(0) == "LOGOUT"){
             break;
         }
 
@@ -160,10 +157,12 @@ void Twitterak::login(int &i){
 
 
 void Twitterak::run(){
+    Terminal t(cin , cout);
     HWND console = GetConsoleWindow();
     MoveWindow(console, 50, 50, 1200, 700, true);
 
-    runSplashScreen("res/splashTextAsciiArt.txt",9,"Welcome!",11);
+    splashScreen screen;
+    screen.runSplashScreen("res/splashTextAsciiArt.txt",9,"Welcome!",11 , t);
 
     system("cls");
 

@@ -12,16 +12,13 @@ void User::set_name(string name){
     this->name = name;
 }
 
-<<<<<<< HEAD:cpp files/User.cpp
-void User::set_username(string username , vector <User> accounts, Terminal t){
-=======
 string User::get_name(){
     return name;
 }
+void User::set_username(string username , vector <User> accounts, Terminal t){
 
 
 void User::set_username(string username , vector <User> accounts){
->>>>>>> e1728afadd55aa8f9b102378cb4d16b8436cffc7:User.cpp
 
     int accsize = accounts.size();
     for (int i=0 ; i<accsize ; i++){

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "User.h"
+#include "user.h"
 
 #ifndef Twitterak_h
 #define Twitterak_h
