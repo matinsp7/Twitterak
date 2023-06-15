@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "Date.h"
 #include "terminal.h"
 
@@ -12,7 +13,7 @@ class User {
     std::string get_name() const;
     void set_gender(std::string);
     std::string get_gender();
-    void set_username(std::string , std::vector<User>);
+    void set_username(std::string , std::map<std::string, User>);
     std::string get_username() const;
     void set_bio(std::string, Terminal);
     std::string get_bio() const;

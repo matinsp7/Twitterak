@@ -1,10 +1,11 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <map>
 
-#include "../header files/date.h"
-#include "../header files/User.h"
-#include "../header files/terminal.h"
+#include "../headerFiles/date.h"
+#include "../headerFiles/User.h"
+#include "../headerFiles/terminal.h"
 
 using namespace std;
 
@@ -30,16 +31,13 @@ void User::set_gender(string gender){
 string User::get_gender (){
     return gender;
 }
-void User::set_username(string username , vector <User> accounts)
+void User::set_username(string username , map<string, User> accounts)
 {
 
-    int accsize = accounts.size();
-    for (int i=0 ; i<accsize ; i++){
-        if (accounts.at(i).get_username() == username){
-            throw invalid_argument(
-                "Username already taken! Please try again :"
-            );
-        }
+    if (accounts.find(username) != accounts.end()){
+        throw invalid_argument(
+            "Username already taken! Please try again :"
+        );
     }
 
     int usersize = username.size();
