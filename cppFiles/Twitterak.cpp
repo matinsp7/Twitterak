@@ -1,358 +1,322 @@
-#include "../header files/Twitterak.h"
 #include <iostream>
 #include <string>
 #include <Windows.h>
+#include <map>
 
-#include "../header files/splashScreen.h"
-#include "../header files/User.h"
+#include "Twitterak.h"
+#include "splashScreen.h"
+#include "user.h"
 
 
 using namespace std;
 
-vector <User> Twitterak::accounts;
+map<string, User> Twitterak::accounts;
 
-void Twitterak::signup (Terminal t){
+//#sharps
+map < string, map<string,int> > sharps;
+
+
+//signup function called when "signup" command entered
+void Twitterak::signup (vector<string>& args, Terminal& t)
+{
     User new_user;
 
-    t.sendMessage("Thank you for your choice.\n");
-
-    string name = t.getStringValue("Name ");
-    new_user.set_name(name);
-
-    string gender = t.getStringValue("Gender (man/woman) ");
-    gender = t.toLower(gender);
-    try{
-        new_user.set_gender(gender);
-    }
-    catch (invalid_argument &err){
-        t.throwError(err.what());
-        return ;
-    }
-
+    string username;
     while (1) {
-        string username = t.getStringValue("Username ");
-
-        if (username.at(0) == '@'){    //to remove @
-            username.erase(0 , 1);
+        if(args.size() == 2){                                       //check if username and
+            username = args[1];                                     //signup command has been
+            args.resize(1);                                         //entered in a single line
+        }else{                                                      //signup @Banana
+            username = t.getStringValue("Username");
         }
-
-        username = t.toLower(username);
-
 
         try{
-            new_user.set_username(username , accounts);
+            new_user.set_username(username , accounts, t);
             break;
         }
-        catch(invalid_argument &err){
-            cerr << err.what() << endl;
+        catch(invalid_argument &e){
+            t.throwError(e.what());
         }
     }
 
+    string name = t.getStringValue("Name");
+    new_user.set_name(name);
+    
     string password = t.getStringValue("Password");
     new_user.set_password(password);
 
-    string Phonenumber = t.getStringValue("Phone number");
-    try {
-        new_user.set_phoneNumber(Phonenumber);
-    }
-    catch (invalid_argument &err){
-        t.throwError (err.what());
-        return ;
-    }
+    string phoneNumber = t.getStringValue("Phone number");
+    new_user.set_PhoneNumber(phoneNumber);
 
-    accounts.push_back (new_user);
+    accounts[username] =  new_user;
 
     t.sendSuccessMessage("Registration was successful.");
 
-    int accsize = accounts.size() -1;
-    login (accsize , t);
+    login (username , t);
 }
 
-
-
-
-void Twitterak::check_validation (Terminal t){
+//called when "login" command entered
+void Twitterak::check_validation (vector<string>& args, Terminal& t)
+{
     string username;
     string password;
 
-    username = t.getStringValue("username");
+    if(args.size() > 1){                            //check if username has been entered
+        username = args.at(1);                      //in shape of :
+    }else{                                          //login @Banana
+        username = t.getStringValue("Username");    //login @Banana password
+    }
 
-    if (username[0] == '@'){    //to remove @
+
+    if (username[0] == '@')                        //to remove @
+    {
         username.erase(0);
     }
-    username = t.toLower(username);
 
-    password = t.getStringValue("password");
-    int accsize = accounts.size();
-    for (int i=0 ; i<accsize ; i++){
-        if (username == accounts.at(i).get_username()){
-            if (password == accounts.at(i).get_password()){
-                login (i , t);
-                break;
-            }
-            else {
-                t.throwError("Usename or Password is incorrect.");
-                break;
-            }
+    if(args.size() == 2)                            //check if password has been entered
+    {                                               //in shape of :
+        password = args.at(2);                      //login @Banana password
+    }
+    else
+    {                                               
+        password = t.getStringValue("Password");
+    }
+    
+
+    if (accounts.find(username) != accounts.end())
+    {
+        if (accounts[username].get_password() == password)
+        {
+            login (username , t);
         }
-        else if (i == accsize-1){
-            t.throwError("Usename or Password is incorrect.");
+        else
+        {
+            t.throwError("Usename or Password is incorrect !");
         }
+    }
+    else
+    {
+        t.throwError("Usename or Password is incorrect !");
+    }
+}
+
+//called when "help" command entered
+void Twitterak::help(Terminal& t)
+{
+    fstream reader("res/help.txt");
+
+    if(reader){
+        std::string allText, tmp;
+        while(getline(reader,tmp)){
+            allText += tmp;
+            allText += '\n';
+        }
+        t.sendMessage(allText);
+    }else{
+        t.throwError("help file not found!");
     }
 
 }
 
+//called when "profile" or "me" command entered entered
+void Twitterak::profile (string& username, Terminal& t)
+{
+    User user = accounts[username];
 
-// ----------------------------------------------------------------------
-
-
-
-inline void profile (int &i , vector <User> accounts, Terminal t){
-    User user = accounts.at(i);
     t.sendMessage("Name : " + user.get_name()+'\n');
     t.sendMessage("Username : " + user.get_username()+'\n');
     t.sendMessage("bio : " + user.get_bio()+'\n');
     t.sendMessage("Date of birth : " + to_string(user.get_DateOfBirth().get_year()) + "/");
     t.sendMessage(to_string(user.get_DateOfBirth().get_month()) + "/");
     t.sendMessage(to_string(user.get_DateOfBirth().get_day())+'\n');
-    t.sendMessage("Phone number : " + user.get_phoneNumber()+'\n');
+    t.sendMessage("Phone number : " + user.get_PhoneNumber()+'\n');
     t.sendMessage("Header : " + user.get_header()+'\n');
 }
 
 
+void Twitterak::editProfile(vector<string>& args, string& username, Terminal& t)
+{
+    User user = accounts[username];
 
-void Twitterak::login(int &i , Terminal t){
-
-    User &user = accounts.at(i);
-
-    vector<string> args;
-    int accsize = accounts.size();
-    while (1) {
-
-        args.clear();
-        args = t.getCommand("> @" + user.get_username() + " ");
-
-        args.at(0) = t.toLower(args.at(0));
-
-
-
-
-
-        if (args.at(0) == "me")
+    if(args.size() >= 4)
+    {
+        args[2] = t.toLower(args[2]);
+        if(args[2] == "username")
         {
-           profile( i , accounts, t);
-        }
-
-
-        else if (args.at(0) == "profile")
-        {
-            if (args.size() == 1)
-            {
-                profile( i , accounts, t);
+            try{
+                user.set_username(args[3] , accounts, t);
+                t.sendSuccessMessage("your username has been successfully changed");
             }
-            else 
-            {
-                if (args.at(1).at(0) == '@') // to remove @
-                {       
-                    args.at(1).erase(0 , 1);
-                }
-                args.at(1) = t.toLower(args.at(1));   //tolowercase username
-                for (int i=0 ; i<accsize ; i++){
-                    if (accounts.at(i).get_username() == args.at(1)){
-                        string color = accounts.at(i).get_header();
-                        HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-                        int cl;
-                        if (color == "white"){
-                            cl = 7;
-                        }
-                        else if (color == "red"){
-                            cl = 4;
-                        }
-                        else if (color == "orange"){
-                            cl = 12;
-                        }
-                        else if (color == "yellow"){
-                            cl = 6;
-                        }
-                        else if (color == "green"){
-                            cl = 10;
-                        }
-                        else if (color == "blue"){
-                            cl = 9;
-                        }
-                        else if (color == "purple"){
-                            cl = 5;
-                        }
-                        else if (color == "black"){
-                            cl = 8;
-                        }
-                        splashScreen screen;
-                        if (accounts.at(i).get_gender() == "man"){
-                            screen.runSplashScreen("man.txt",cl,"",cl , t);
-                        }
-                        else {
-                            screen.runSplashScreen("woman.txt",cl,"",cl , t);
-                        }
-                        profile (i , accounts , t);
-                        SetConsoleTextAttribute(hOutput,7);
-                        break;
-                    }
-                }
+            catch(invalid_argument &e){
+                t.throwError(e.what());
             }
         }
-
-
-
-
-
-
-
-        else if ( args.at(0) == "edit")
+        else if(args[2] == "password")
         {
-            args.at(1) = t.toLower(args.at(1)); 
-            if (args.at(1) == "profile")
+            user.set_password(args[3]);
+            t.sendSuccessMessage("your password has been successfully changed");
+        }
+        else if(args[2] == "name")
+        {
+            string tmp;
+            for(int i{0}; i < args.size(); i++){
+                tmp += args[i];
+            }
+            user.set_name(tmp);
+            t.sendSuccessMessage("your name has been successfully changed");
+        }
+        else if(args[2] == "bio")
+        {
+            string tmp;
+            for(int i{3}; i < args.size(); i++){
+                tmp += args[i];
+            }
+            user.set_bio(tmp, t);
+            t.sendSuccessMessage("your bio has been successfully changed");
+        }
+        else if(args[2] == "phone" && t.toLower(args[3]) == "number")
+        {
+            if(args.size() == 5){
+                user.set_PhoneNumber(args[4]);
+                t.sendSuccessMessage("your phone number has been successfully changed");
+            }
+            else
             {
-                string editP;
-                string newP;
-                if (args.size() == 2)
+                t.throwError("invalid input for phone number.");
+            }
+        }
+        else if(args[2] == "header")
+        {
+            user.set_header(args[3]);
+            t.sendSuccessMessage("your header has been successfully changed");
+        }
+        else if(args[2] == "date")
+        {
+            if(args.size() >= 5 && t.toLower(args[3]) == "of" && t.toLower(args[4]) == "birth")
+            {
+                if(args.size() == 5)
                 {
-                    profile(i , accounts, t);
-                    editP = t.getStringValue("What do you want to change? ");
-                    editP = t.toLower(editP); // tolowercase edetP
-                    if (editP != "date of birth" && editP != "header"){
-                        newP = t.getStringValue ("Enter the new change. ");
+                    int y = t.getIntValue("Year");
+                    int m = t.getIntValue("Month");
+                    int d = t.getIntValue("Day");
+                    if(user.set_DateOfBirth(y,m,d,t)){
+                        t.sendSuccessMessage("your date of birth has been successfully changed");
                     }
+                }
+                else if(args.size() == 6)
+                {
+
                 }
                 else
                 {
-                    editP = args.at(2);
-                    editP = t.toLower(editP); // tolowercase edetP
-                    newP = args.at(3);
+                    t.throwError("the syntax of this command is:\nedit profile date of birth year/month/day");
                 }
+            }else
+            {
+                t.throwError("the syntax of this command is:\nedit profile date of birth");
+            }
+            user.set_header(args[3]);
+        }
+    }
+    else
+    {
+        t.throwError("could not find property with name \"" + args.at(2) + "\"");
+    }
+    accounts[username] = user;
+}
 
+void Twitterak::editTweet()
+{
 
-                if (editP == "name")
+}
+//runs a while(1) loop when user is logged in.
+//called from check_validation func when username and password was valid.
+//called from signup func when regstration was successful. 
+void Twitterak::login(string& username , Terminal& t)
+{
+
+    User user = accounts[username];
+
+    vector<string> args;
+    while (1) {
+
+        args.clear();
+        args = t.getCommand("> @" + user.get_username() +" >");
+
+        args.at(0) = t.toLower(args.at(0));
+
+        if ( args.at(0) == "profile" || args.at(0) == "me")
+        {
+            if(args.size() == 2)
+            {
+                if(args[1][0] == '@')
+                    args[1].erase(1);
+
+                if(accounts.find(args[1]) != accounts.end())
                 {
-                    user.set_name(newP);
-                    t.sendSuccessMessage ("Your name has been successfully changed.");
+                    profile(args[1], t);
                 }
-
-
-
-                else if (editP == "username")
+                else
                 {
-                    if (newP.at(0) == '@') ////to remove @
-                    {    
-                        newP.erase(0);
-                    }
-                    newP = t.toLower(newP); //tolowercase username
-                    try{
-                        user.set_username(newP , accounts);
-                        t.sendSuccessMessage ("Your username has been successfully changed.");
-                    }
-                    catch(invalid_argument &err){
-                        t.throwError(err.what());
-                    }
-                }
-                  
-
-
-                else if (editP == "bio")
-                {
-                    try {
-                        user.set_bio (newP , t);
-                        t.sendSuccessMessage ("Your bio has been successfully changed.");
-                    }
-                    catch (invalid_argument &a) {
-                        t.throwError(a.what());
-                    }
-                }
-
-                else if (editP == "date of birth")
-                {
-                    user.set_dateOfBirth (t);
-                }
-
-                else if (editP == "phoneumber")
-                {
-                    try {
-                        user.set_phoneNumber(newP);
-                        t.sendSuccessMessage ("Your phonenumber has been successfully changed.");
-                    }
-                    catch (invalid_argument &a) {
-                        cout << a.what() << endl;
-                    }
-                }
-
-                else if  (editP == "password")
-                {                        
-                    string currentPass = t.getStringValue("Enter your current password : ");
-                    if (currentPass == user.get_password())
-                    {
-                        user.set_password(newP);
-                    }
-                    else 
-                    {
-                        t.throwError ("The password is not correct.");
-                    }
-                }
-
-                else if (editP == "header")
-                {
-                    try {
-                        user.set_header(t);
-                        t.sendSuccessMessage ("Your header has been successfully changed.");
-                    }
-                    catch (invalid_argument &err){
-                        t.throwError(err.what());
-                    }
-                }
-
-                else 
-                {
-                    t.throwError("Undefined command.");
+                    t.throwError("username not found.");
                 }
             }
+            else if(args.size() == 1)
+            {
+                profile(username, t);
+            }
+            else
+            {
+                t.throwError("invalid username.");
+            }
         }
+        else if ( args.at(0) == "edit")
+        {
+            if(args.size() < 3){
+                t.throwError("invalid input.");
+                continue;
+            }
 
+            args.at(1) = t.toLower(args.at(1));
+
+            if(args.at(1) == "profile")
+            {
+                editProfile(args, username, t);
+            }
+            else if(args.at(1) == "tweet")
+            {
+                editTweet();
+            }
+        }
+        else if ( args.at(0) == "delete")
+        {
+            system ("cls");
+        }
         else if ( args.at(0) == "cls")
         {
             system ("cls");
         }
-        else if ( args.at(0) == "logout")
-        {
+        else if ( args.at(0) == "logout"){
             break;
-        }
-        else 
-        {
-            t.throwError("Undefined command.");
         }
     }
 }
 
-
-
-
-// ----------------------------------------------------------------------
-
-
-
-
-void Twitterak::run(){
+//run func of class
+void Twitterak::run()
+{
 
     HWND console = GetConsoleWindow();
     MoveWindow(console, 50, 50, 1200, 700, true);
 
     Terminal t(cin , cout);
 
-    splashScreen screen;
-    screen.runSplashScreen("splashTextAsciiArt.txt",9,"Welcome!",11 , t);
-
-    // HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    // SetConsoleTextAttribute(hOutput,7);
+    SplashScreen screen;
+    screen.runSplashScreen("res/splashTextAsciiArt.txt",9,"res/welcomeText.txt",11 , t);
 
     vector<string> args;
-    while (1){
+    while (1)
+    {
         
         args.clear();
         args = t.getCommand("> ");
@@ -361,15 +325,37 @@ void Twitterak::run(){
 
         if (args[0] == "signup")
         {
-            signup(t);
+            if(args.size() < 3){
+                signup(args,t);
+            }else{
+                t.throwError("invalid username.");
+            }
         }
         else if (args[0] == "login")
         {
-            check_validation(t);
+            if(args.size() < 4){
+                check_validation(args, t);
+            }else{
+                t.throwError("invalid username or password.");
+            }
+        }
+        else if (args[0] == "help")
+        {
+            if(args.size() < 3){
+                help(t);
+            }else{
+                t.throwError("This command is not supported by the help utility.");
+            }
+        }
+        else if (args[0] == "exit")
+        {
+            exit(0);
         }
         else if (args[0] == "cls")
         {
             system("cls");
+        }else{
+            t.throwError('"' + args[0] + "\" is not recognized as an internal or external command");
         }
     }
 }
