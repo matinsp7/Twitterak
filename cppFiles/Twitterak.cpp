@@ -1,15 +1,16 @@
-#include "../header files/Twitterak.h"
+#include "../headerFiles/Twitterak.h"
 #include <iostream>
 #include <string>
 #include <Windows.h>
+#include <map>
 
-#include "../header files/splashScreen.h"
-#include "../header files/User.h"
+#include "../headerFiles/splashScreen.h"
+#include "../headerFiles/User.h"
 
 
 using namespace std;
 
-vector <User> Twitterak::accounts;
+map<string, User> Twitterak::accounts;
 
 void Twitterak::signup (Terminal t){
     User new_user;
@@ -29,8 +30,9 @@ void Twitterak::signup (Terminal t){
         return ;
     }
 
+    string username;
     while (1) {
-        string username = t.getStringValue("Username ");
+        username = t.getStringValue("Username ");
 
         if (username.at(0) == '@'){    //to remove @
             username.erase(0 , 1);
@@ -60,12 +62,11 @@ void Twitterak::signup (Terminal t){
         return ;
     }
 
-    accounts.push_back (new_user);
+    accounts[username] =  new_user;
 
     t.sendSuccessMessage("Registration was successful.");
 
-    int accsize = accounts.size() -1;
-    login (accsize , t);
+    login (username , t);
 }
 
 
@@ -83,21 +84,21 @@ void Twitterak::check_validation (Terminal t){
     username = t.toLower(username);
 
     password = t.getStringValue("password");
-    int accsize = accounts.size();
-    for (int i=0 ; i<accsize ; i++){
-        if (username == accounts.at(i).get_username()){
-            if (password == accounts.at(i).get_password()){
-                login (i , t);
-                break;
-            }
-            else {
-                t.throwError("Usename or Password is incorrect.");
-                break;
-            }
+
+    if (accounts.find(username) != accounts.end())
+    {
+        if (accounts[username].get_password() == password)
+        {
+            login (username , t);
         }
-        else if (i == accsize-1){
-            t.throwError("Usename or Password is incorrect.");
+        else
+        {
+            t.throwError("Usename or Password is incorrect !");
         }
+    }
+    else
+    {
+        t.throwError("Usename or Password is incorrect !");
     }
 
 }
@@ -107,8 +108,8 @@ void Twitterak::check_validation (Terminal t){
 
 
 
-inline void profile (int &i , vector <User> accounts, Terminal t){
-    User user = accounts.at(i);
+inline void profile (string& username , map<string, User> accounts, Terminal t){
+    User user = accounts[username];
     t.sendMessage("Name : " + user.get_name()+'\n');
     t.sendMessage("Username : " + user.get_username()+'\n');
     t.sendMessage("bio : " + user.get_bio()+'\n');
@@ -121,12 +122,11 @@ inline void profile (int &i , vector <User> accounts, Terminal t){
 
 
 
-void Twitterak::login(int &i , Terminal t){
+void Twitterak::login(string& username , Terminal t){
 
-    User &user = accounts.at(i);
+    User user = accounts[username];
 
     vector<string> args;
-    int accsize = accounts.size();
     while (1) {
 
         args.clear();
@@ -140,7 +140,7 @@ void Twitterak::login(int &i , Terminal t){
 
         if (args.at(0) == "me")
         {
-           profile( i , accounts, t);
+           profile( username , accounts, t);
         }
 
 
@@ -148,7 +148,7 @@ void Twitterak::login(int &i , Terminal t){
         {
             if (args.size() == 1)
             {
-                profile( i , accounts, t);
+                profile( username , accounts, t);
             }
             else 
             {
@@ -157,52 +157,47 @@ void Twitterak::login(int &i , Terminal t){
                     args.at(1).erase(0 , 1);
                 }
                 args.at(1) = t.toLower(args.at(1));   //tolowercase username
-                for (int i=0 ; i<accsize ; i++){
-                    if (accounts.at(i).get_username() == args.at(1)){
-                        string color = accounts.at(i).get_header();
-                        HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-                        int cl;
-                        if (color == "white"){
-                            cl = 7;
-                        }
-                        else if (color == "red"){
-                            cl = 4;
-                        }
-                        else if (color == "orange"){
-                            cl = 12;
-                        }
-                        else if (color == "yellow"){
-                            cl = 6;
-                        }
-                        else if (color == "green"){
-                            cl = 10;
-                        }
-                        else if (color == "blue"){
-                            cl = 9;
-                        }
-                        else if (color == "purple"){
-                            cl = 5;
-                        }
-                        else if (color == "black"){
-                            cl = 8;
-                        }
-                        splashScreen screen;
-                        if (accounts.at(i).get_gender() == "man"){
-                            screen.runSplashScreen("man.txt",cl,"",cl , t);
-                        }
-                        else {
-                            screen.runSplashScreen("woman.txt",cl,"",cl , t);
-                        }
-                        profile (i , accounts , t);
-                        SetConsoleTextAttribute(hOutput,7);
-                        break;
+
+                if (accounts.find(args.at(1)) != accounts.end()){
+                    string color = accounts[args.at(1)].get_header();
+                    HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
+                    int cl;
+                    if (color == "white"){
+                        cl = 7;
                     }
+                    else if (color == "red"){
+                        cl = 4;
+                    }
+                    else if (color == "orange"){
+                        cl = 12;
+                    }
+                    else if (color == "yellow"){
+                        cl = 6;
+                    }
+                    else if (color == "green"){
+                        cl = 10;
+                    }
+                    else if (color == "blue"){
+                        cl = 9;
+                    }
+                    else if (color == "purple"){
+                        cl = 5;
+                    }
+                    else if (color == "black"){
+                        cl = 8;
+                    }
+                    splashScreen screen;
+                    if (accounts[args.at(1)].get_gender() == "man"){
+                        screen.runSplashScreen("man.txt",cl,"",cl , t);
+                    }
+                    else {
+                        screen.runSplashScreen("woman.txt",cl,"",cl , t);
+                    }
+                    profile (args.at(1) , accounts , t);
+                    SetConsoleTextAttribute(hOutput,7);
                 }
             }
         }
-
-
-
 
 
 
@@ -216,7 +211,7 @@ void Twitterak::login(int &i , Terminal t){
                 string newP;
                 if (args.size() == 2)
                 {
-                    profile(i , accounts, t);
+                    profile(username , accounts, t);
                     editP = t.getStringValue("What do you want to change? ");
                     editP = t.toLower(editP); // tolowercase edetP
                     if (editP != "date of birth" && editP != "header"){
@@ -248,6 +243,7 @@ void Twitterak::login(int &i , Terminal t){
                     newP = t.toLower(newP); //tolowercase username
                     try{
                         user.set_username(newP , accounts);
+                        username = newP;
                         t.sendSuccessMessage ("Your username has been successfully changed.");
                     }
                     catch(invalid_argument &err){
@@ -312,7 +308,10 @@ void Twitterak::login(int &i , Terminal t){
                 {
                     t.throwError("Undefined command.");
                 }
+
+                accounts[username] = user;
             }
+        
         }
 
         else if ( args.at(0) == "cls")
