@@ -6,11 +6,13 @@
 
 #include "../headerFiles/splashScreen.h"
 #include "../headerFiles/User.h"
+#include "../headerFiles/tweet.h"
 
 
 using namespace std;
 
 map<string, User> Twitterak::accounts;
+map <string, map<string, vector<int>> > Twitterak::sharps;
 
 void Twitterak::signup (Terminal t){
     User new_user;
@@ -120,6 +122,72 @@ inline void profile (string& username , map<string, User> accounts, Terminal t){
     t.sendMessage("Header : " + user.get_header()+'\n');
 }
 
+//argument0: the text that contains sharps
+//returns a vector of sharps without sharp character(#)
+inline vector<string> findSharpsInText(string& text)
+{
+    vector<string> sharps;
+    unsigned begin{0};
+    for(int i{0}; i < text.length(); i++)
+    {
+        if(text.at(i) == '#')
+        {
+            begin = i+1;
+            for(int j{i+1}; j < text.length(); j++)
+            {
+                if(text.at(j) == '#')
+                {
+                    begin = j+1;
+                }
+                else if(text.at(j) == ' ')
+                {
+                    if(j == 0)
+                        break;
+                    string sharp = text.substr(begin, j-begin);       
+                    sharps.push_back(sharp);
+                    i = j;
+                    break;
+
+                }else if(j == text.length()-1)
+                {
+                    string sharp = text.substr(begin, j-begin+1);       
+                    sharps.push_back(sharp);
+                }
+            }
+        }
+    }
+
+    for(int i{0}; i < sharps.size(); i++)
+    {
+        for(int j{i+1}; j < sharps.size(); j++)
+        {
+            if(sharps.at(i) == sharps.at(j))
+            {
+                sharps.erase( sharps.begin() + j );
+            }
+        }
+    }
+
+    return sharps;
+}
+
+//this function creates a tweet by input information and returns it
+//argument0: text of tweet
+//argument1: the username of who tweeted
+//argument2: the index of tweet
+//argument3: the sharps
+//returns a object of tweet class 
+Tweet Twitterak::tweet(string& text,string& username, unsigned& tweetIndex)
+{
+    vector<string> textSharps = findSharpsInText(text);
+    for(int i{0}; i < textSharps.size(); i++)
+    {
+        sharps[textSharps.at(i)][username].push_back(tweetIndex);
+    }
+
+    Tweet newTweet(text);
+    return newTweet;
+}
 
 
 void Twitterak::login(string& username , Terminal t){
@@ -312,6 +380,51 @@ void Twitterak::login(string& username , Terminal t){
                 accounts[username] = user;
             }
         
+        }
+
+
+        else if( args.at(0) == "tweet")
+        {
+            if(args.size() > 1)
+            {
+                string tweetText;
+                for(int i{1}; i < args.size(); i++)
+                {
+                    tweetText += args[i];
+                    tweetText += ' ';
+                }
+
+                unsigned tweetIndex = user.tweets.size() == 0 ?  1 : user.tweets.rbegin()->first+1;
+
+                user.tweets.insert({tweetIndex, tweet(tweetText, username, tweetIndex)});
+
+                accounts[username] = user;
+            }
+            else
+            {
+                t.throwError("text of tweet cant be empty.");
+            }
+        }
+
+        else if( args.at(0).at(0) == '@')
+        {
+            
+            args.at(0).erase(0 , 1);
+
+            if(accounts.find(args.at(0)) != accounts.end())
+            {
+                
+                map<unsigned, Tweet> tweets = accounts[args.at(0)].tweets;
+
+                for (auto itr = (tweets).begin(); itr != (tweets).end(); ++itr) {
+                    string message = to_string(itr->first) + ": "+ itr->second.getText() + '\n';
+                    t.sendMessage(message);
+                }
+            }
+            else
+            {
+
+            }
         }
 
         else if ( args.at(0) == "cls")
