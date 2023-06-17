@@ -12,7 +12,7 @@
 using namespace std;
 
 map<string, User> Twitterak::accounts;
-map <string, map<string, vector<int>> > Twitterak::sharps;
+map <string, map<User*, vector<int>> > Twitterak::sharps;
 
 void Twitterak::signup (Terminal t){
     User new_user;
@@ -177,12 +177,12 @@ inline vector<string> findSharpsInText(string& text)
 //argument2: the index of tweet
 //argument3: the sharps
 //returns a object of tweet class 
-Tweet Twitterak::tweet(string& text,string& username, unsigned& tweetIndex)
+Tweet Twitterak::tweet(string& text,User& user, unsigned& tweetIndex)
 {
     vector<string> textSharps = findSharpsInText(text);
     for(int i{0}; i < textSharps.size(); i++)
     {
-        sharps[textSharps.at(i)][username].push_back(tweetIndex);
+        sharps[textSharps.at(i)][&user].push_back(tweetIndex);
     }
 
     Tweet newTweet(text);
@@ -413,7 +413,7 @@ void Twitterak::login(string& username , Terminal t){
 
                 unsigned tweetIndex = user.tweets.size() == 0 ?  1 : user.tweets.rbegin()->first+1;
 
-                user.tweets.insert({tweetIndex, tweet(tweetText, username, tweetIndex)});
+                user.tweets.insert({tweetIndex, tweet(tweetText, user, tweetIndex)});
 
                 accounts[username] = user;
             }
@@ -441,6 +441,25 @@ void Twitterak::login(string& username , Terminal t){
             else
             {
 
+            }
+        }
+
+        else if( args.at(0).at(0) == '#')
+        {
+            string hashtag = args.at(0).erase(0,1);
+
+            if(sharps.find(hashtag) != sharps.end())
+            {
+                for(auto it = sharps[hashtag].begin(); it != sharps[hashtag].end(); it++)
+                {
+                    vector<int> tweetIndexes = it->second;
+                    for(int i{0}; i < tweetIndexes.size(); i++) //vector size
+                    {
+                        cout << i << '\n';
+                        cout << it->second.at(i) << '\n';
+                        t.sendMessage((*it->first).get_username() + " " +  to_string(it->second.at(i)) + " :" + (*it->first).tweets.at(it->second.at(i)).getText() + '\n');
+                    }
+                }
             }
         }
 
@@ -480,7 +499,7 @@ void Twitterak::run(){
     Terminal t(cin , cout);
 
     splashScreen screen;
-    screen.runSplashScreen("splashTextAsciiArt.txt",9,"Welcome!",11 , t);
+    screen.runSplashScreen("splashTextAsciiArt.txt",9,"welcomeText.txt",11 , t);
 
     // HANDLE hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     // SetConsoleTextAttribute(hOutput,7);

@@ -6,6 +6,7 @@
 #include <map>
 #include "Date.h"
 #include "terminal.h"
+#include "tweet.h"
 
 class User {
     public:
@@ -25,6 +26,8 @@ class User {
     std::string get_password() const;
     void set_header(Terminal);
     std::string get_header() const;
+
+    std::map<unsigned, Tweet> tweets;
 
 private:
     std::string name;
