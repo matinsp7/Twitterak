@@ -1,0 +1,3 @@
+Twitterak [Version 1.0]
+All rights reserved.
+type HELP for information about commands.

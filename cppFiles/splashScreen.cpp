@@ -41,9 +41,22 @@ void splashScreen::printSplashTextUpDownAnimation(std::string address,int color,
     Reader.close ();                                  //close file
 }
 
-void splashScreen::printGuideMessage(std::string messageTxt,int messageTxtColor, Terminal t){
+void splashScreen::printGuideMessage(std::string messageTxtAddress,int messageTxtColor, Terminal t){
     SetConsoleTextAttribute(hOutput,messageTxtColor);
-    t.sendMessage(messageTxt +'\n');
+    std::ifstream reader(messageTxtAddress);
+
+    if (reader)                                        //Check if everything is good
+    {
+        while (reader.good())
+        {
+            printLine(reader, messageTxtColor, t);
+        }
+    }
+    else                                              //Return error
+    {
+	    t.throwError("WelcomeText File does not exist.");
+    }
+    
 }
 
 void splashScreen::runSplashScreen(std::string address,int splashTextColor,std::string messageTxt,int messageTxtColor, Terminal t){
