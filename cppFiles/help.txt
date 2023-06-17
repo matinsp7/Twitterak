@@ -1,0 +1,4 @@
+SIGNUP     signup command
+LOGIN      login command
+HELP       help command
+EXIT       exit from app

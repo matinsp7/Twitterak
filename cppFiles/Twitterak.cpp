@@ -189,6 +189,23 @@ Tweet Twitterak::tweet(string& text,string& username, unsigned& tweetIndex)
     return newTweet;
 }
 
+//called when "help" command entered
+void Twitterak::help(Terminal& t)
+{
+    fstream reader("help.txt");
+
+    if(reader){
+        std::string allText, tmp;
+        while(getline(reader,tmp)){
+            allText += tmp;
+            allText += '\n';
+        }
+        t.sendMessage(allText);
+    }else{
+        t.throwError("help file not found!");
+    }
+
+}
 
 void Twitterak::login(string& username , Terminal t){
 
@@ -427,6 +444,11 @@ void Twitterak::login(string& username , Terminal t){
             }
         }
 
+        else if(args.at(0) == "help")
+        {
+            help(t);
+        }
+
         else if ( args.at(0) == "cls")
         {
             system ("cls");
@@ -478,6 +500,10 @@ void Twitterak::run(){
         else if (args[0] == "login")
         {
             check_validation(t);
+        }
+        else if(args.at(0) == "help")
+        {
+            help(t);
         }
         else if (args[0] == "cls")
         {

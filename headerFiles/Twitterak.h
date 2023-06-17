@@ -11,6 +11,7 @@ class Twitterak {
     void signup (Terminal t);
     void check_validation (Terminal t);
     Tweet tweet(std::string& text,std::string& username, unsigned& tweetIndex);
+    void help(Terminal&);
     void login(std::string& username , Terminal t); // int is the index of accvec
     void run ();
     private:
