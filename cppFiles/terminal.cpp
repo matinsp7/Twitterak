@@ -33,7 +33,7 @@ using namespace std;
         for(unsigned i{0}; i < size; i++)
         {
             if(inQuotation)
-            {                       //i points to a element that is in quotation
+            {                       //i points to an element that is in quotation
                 if(line[i] == '"' || line[i] == '\'')
                 {                        //its the end of text in quotation
                     inQuotation = 0;

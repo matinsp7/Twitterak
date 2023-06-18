@@ -105,13 +105,21 @@ Date User::get_DateOfBirth() const{
 }
 
 void User::set_phoneNumber(string phone){
-    if (phone.size() == 12){
+    ins size = phone.size();
+    /*if (phone.size() == 12){
         phoneNumber = phone;
     }
     else {
         throw invalid_argument (
             "The phone number is incorrect."
         );
+    }*/
+    for (size_t i=0 ; i<size ; i++){
+        if ( !isalnum(phone(i)) ){
+            throw invalid_argument (
+            "The phone number is incorrect."
+            );
+        }
     }
 }
 
@@ -127,11 +135,7 @@ string User::get_password()const {
     return password;
 }
 
-void User::set_header(Terminal t){
-    t.sendMessage ("Select header color between : \n");
-    string color;
-    color = t.getStringValue ("White / Red / Orange / Yellow / Green / Blue / Purple / Black");
-    color = t.toLower(color);
+void User::set_header(string color){
     if (color == "white" || color == "red" || color == "orange" || color == "yellow" || color == "green" || color == "blue" || color == "purple" || color == "black"){
         header = color;
     }

@@ -24,7 +24,7 @@ class User {
     std::string get_phoneNumber() const;
     void set_password(std::string);
     std::string get_password() const;
-    void set_header(Terminal);
+    void set_header(string);
     std::string get_header() const;
 
     std::map<unsigned, Tweet> tweets;
