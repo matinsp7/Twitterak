@@ -19,9 +19,9 @@ public:
     //arguments: username of who liked tweet
     //returns true if tweet liked
     //returns false if tweet unliked
-    bool likeTweet(User* username);
+    bool likeTweet(User* user);
 
-
+    bool dislikeTweet(User* user);
     //vector of usernames that liked tweet
     std::vector<User*> likes;
     

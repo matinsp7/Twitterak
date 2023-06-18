@@ -551,29 +551,29 @@ void Twitterak::login(string& username , Terminal t){
         }
 
 
-            else if( args.at(0) == "tweet")
+        else if( args.at(0) == "tweet")
+        {
+            if(args.size() > 1)
             {
-                if(args.size() > 1)
+                string tweetText;
+                for(int i{1}; i < args.size(); i++)
                 {
-                    string tweetText;
-                    for(int i{1}; i < args.size(); i++)
-                    {
-                        tweetText += args[i];
-                        tweetText += ' ';
-                    }
-
-                    unsigned tweetIndex = (*user).tweets.size() == 0 ?  1 : (*user).tweets.rbegin()->first+1;
-
-                    (*user).tweets.insert({tweetIndex, tweet(tweetText, *user, tweetIndex)});
-
-                    accounts[username] = *user;
-                }
-                else
-                {
-                    t.throwError("Text of tweet cant be empty.");
+                    tweetText += args[i];
+                    tweetText += ' ';
                 }
 
+                unsigned tweetIndex = (*user).tweets.size() == 0 ?  1 : (*user).tweets.rbegin()->first+1;
+
+                (*user).tweets.insert({tweetIndex, tweet(tweetText, *user, tweetIndex)});
+
+                accounts[username] = *user;
             }
+            else
+            {
+                t.throwError("Text of tweet cant be empty.");
+            }
+
+        }
 
         else if(args.at(0) == "delete" && args.size() == 3 && args.at(1) == "tweet")
         {
@@ -611,9 +611,9 @@ void Twitterak::login(string& username , Terminal t){
             }
         }
 
-        else if( args.at(0).at(0) == '@')
+        else if( args.at(0).at(0) == '@' && args.size() == 1)
         {
-            
+            //its @username command
             args.at(0).erase(0 , 1);
 
             if(accounts.find(args.at(0)) != accounts.end())
@@ -630,6 +630,51 @@ void Twitterak::login(string& username , Terminal t){
                 if(message.length() == 0)
                 {
                     t.sendMessage("This user has not shared a tweet yet.\n");
+                }
+            }
+            else
+            {
+                t.throwError("User not found.");
+            }
+        }
+
+        else if( args.at(0).at(0) == '@' && args.size() == 2)
+        {
+            //its @username:index command
+            args.at(0).erase(0,1);
+
+            string usernameOfPost = args.at(0);
+            int index = stoi(args.at(1));
+            
+            if(accounts.find(usernameOfPost) != accounts.end())
+            {
+                if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+                {
+                    t.sendMessage(to_string(index) + ": " + accounts.at(usernameOfPost).tweets.at(index).getText() + '\n');
+                }
+                else
+                {
+                    t.throwError("couldnt find any tweet with this index.");
+                }
+            }
+            else
+            {
+                t.throwError("User not found.");
+            }
+        }
+
+        else if( args.at(0).at(0) == '@' && args.size() == 3)
+        {
+            //its @username:index:likes command
+            args.at(0).erase(0,1);
+
+            string usernameOfPost = args.at(0);
+            int index = stoi(args.at(1));
+            if(accounts.find(usernameOfPost) != accounts.end())
+            {
+                if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+                {
+                    t.sendMessage("likes : " + to_string(accounts.at(usernameOfPost).tweets.at(index).likes.size()) + '\n');
                 }
             }
             else
@@ -659,6 +704,86 @@ void Twitterak::login(string& username , Terminal t){
             }
         }
 
+        else if(args.at(0) == "like")
+        {
+            //its like @username:index command
+            if(args.size() == 3)
+            {
+                args.at(1).erase(0,1);
+
+                string usernameOfPost = args.at(1);
+                int index = stoi(args.at(2));
+                
+                if(accounts.find(usernameOfPost) != accounts.end())
+                {
+                    if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+                    {
+                        if(accounts.at(usernameOfPost).tweets.at(index).likeTweet(&accounts.at(username)))
+                        {
+                            t.sendSuccessMessage("Liked successfully.");
+                        }
+                        else
+                        {
+                            t.sendMessage("You have already liked this tweet.\n");
+                        }
+                    }
+                    else
+                    {
+                        t.sendMessage("Couldnt find any index with this index.\n");
+                    }
+                }
+                else
+                {
+                    t.throwError("User not found.");
+                }
+                
+            }
+            else
+            {
+                t.throwError("the syntax of this command is:\nlike @username:index");
+            }
+        }
+
+        else if(args.at(0) == "dislike")
+        {
+            //its like @username:index command
+            if(args.size() == 3)
+            {
+                args.at(1).erase(0,1);
+
+                string usernameOfPost = args.at(1);
+                int index = stoi(args.at(2));
+                
+                if(accounts.find(usernameOfPost) != accounts.end())
+                {
+                    if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+                    {
+                        if(accounts.at(usernameOfPost).tweets.at(index).dislikeTweet(&accounts.at(username)))
+                        {
+                            t.sendSuccessMessage("Disiked successfully.");
+                        }
+                        else
+                        {
+                            t.sendMessage("You have already disliked this tweet.\n");
+                        }
+                    }
+                    else
+                    {
+                        t.sendMessage("Couldnt find any index with this index.\n");
+                    }
+                }
+                else
+                {
+                    t.throwError("User not found.");
+                }
+                
+            }
+            else
+            {
+                t.throwError("the syntax of this command is:\ndislike @username:index");
+            }
+        }
+        
         else if(args.at(0) == "help")
         {
             help(t);

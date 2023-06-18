@@ -21,18 +21,32 @@ string Tweet::getText() const{
 
 //arguments: username of who liked tweet
 //returns true if tweet liked
-//returns false if tweet unliked
 bool Tweet::likeTweet(User* user)
 {
     for(int i{0}; i < likes.size(); i++)
     {
         if(likes[i] == user)
         {
-            likes.erase(likes.begin() + i);
             return 0;
         }
     }
 
     likes.push_back(user);
     return 1;
+}
+
+//arguments: username of who disliked tweet
+//returns true if tweet disliked
+bool Tweet::dislikeTweet(User* user)
+{
+    for(int i{0}; i < likes.size(); i++)
+    {
+        if(likes[i] == user)
+        {
+            likes.erase(likes.begin() + i);
+            return 1;
+        }
+    }
+
+    return 0;
 }
