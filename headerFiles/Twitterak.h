@@ -8,10 +8,12 @@
 #include "tweet.h"
 class Twitterak {
     public:
-    void signup (Terminal t);
+    void signup (Terminal t , std::string);
     void check_validation (Terminal t);
     void help(Terminal&);
     Tweet tweet(std::string& text,User& user, unsigned& tweetIndex);
+    bool deleteTweet(User& user, unsigned index, std::map < std::string, std::map< User*,std::vector<int> > >& sharps);
+    bool editTweet(Tweet& tweet, unsigned index, std::string newText, User& user, std::map < std::string, std::map< User*,std::vector<int> > >& sharps);
     void login(std::string& username , Terminal t); // int is the index of accvec
     void run ();
     private:

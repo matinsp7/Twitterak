@@ -105,7 +105,7 @@ Date User::get_DateOfBirth() const{
 }
 
 void User::set_phoneNumber(string phone){
-    ins size = phone.size();
+    int size = phone.size();
     /*if (phone.size() == 12){
         phoneNumber = phone;
     }
@@ -115,7 +115,7 @@ void User::set_phoneNumber(string phone){
         );
     }*/
     for (size_t i=0 ; i<size ; i++){
-        if ( !isalnum(phone(i)) ){
+        if ( !isalnum(phone[i]) ){
             throw invalid_argument (
             "The phone number is incorrect."
             );
