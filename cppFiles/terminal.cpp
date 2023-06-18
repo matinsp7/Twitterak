@@ -60,7 +60,7 @@ using namespace std;
                     inQuotation = 1;
                     begin = i;
                 }
-                else if(line[i] == ' ')
+                else if(line[i] == ' ' || line[i] == ':')
                 {
                     if(begin != -1)
                     {
@@ -70,7 +70,12 @@ using namespace std;
                     }
 
                 }
-                else if(i == size-1)
+                else if(begin == -1)
+                {
+                    begin = i;
+                }
+
+                if(i == size-1)
                 {
                     if(begin != -1)
                     {
@@ -78,15 +83,11 @@ using namespace std;
                         args.push_back(letter);
                         begin = -1;
                     }
-                    else if(args.size() == 0)
+                    else
                     {
                         letter = line[i];
                         args.push_back(letter);
                     }
-                }
-                else if(begin == -1)
-                {
-                    begin = i;
                 }
             }
         }
