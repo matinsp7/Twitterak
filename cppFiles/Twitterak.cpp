@@ -19,18 +19,18 @@ void Twitterak::signup (Terminal t){
 
     t.sendMessage("Thank you for your choice.\n");
 
-    string name = t.getStringValue("Name ");
-    new_user.set_name(name);
+    // string name = t.getStringValue("Name ");
+    // new_user.set_name(name);
 
-    string gender = t.getStringValue("Gender (man/woman) ");
-    gender = t.toLower(gender);
-    try{
-        new_user.set_gender(gender);
-    }
-    catch (invalid_argument &err){
-        t.throwError(err.what());
-        return ;
-    }
+    // string gender = t.getStringValue("Gender (man/woman) ");
+    // gender = t.toLower(gender);
+    // try{
+    //     new_user.set_gender(gender);
+    // }
+    // catch (invalid_argument &err){
+    //     t.throwError(err.what());
+    //     return ;
+    // }
 
     string username;
     while (1) {
@@ -52,17 +52,17 @@ void Twitterak::signup (Terminal t){
         }
     }
 
-    string password = t.getStringValue("Password");
-    new_user.set_password(password);
+    // string password = t.getStringValue("Password");
+    // new_user.set_password(password);
 
-    string Phonenumber = t.getStringValue("Phone number");
-    try {
-        new_user.set_phoneNumber(Phonenumber);
-    }
-    catch (invalid_argument &err){
-        t.throwError (err.what());
-        return ;
-    }
+    // string Phonenumber = t.getStringValue("Phone number");
+    // try {
+    //     new_user.set_phoneNumber(Phonenumber);
+    // }
+    // catch (invalid_argument &err){
+    //     t.throwError (err.what());
+    //     return ;
+    // }
 
     accounts[username] =  new_user;
 
@@ -124,7 +124,7 @@ inline void profile (string& username , map<string, User> accounts, Terminal t){
 
 //argument0: the text that contains sharps
 //returns a vector of sharps without sharp character(#)
-inline vector<string> findSharpsInText(string& text)
+inline vector<string> findSharpsInText(string text)
 {
     vector<string> sharps;
     unsigned begin{0};
@@ -171,6 +171,83 @@ inline vector<string> findSharpsInText(string& text)
     return sharps;
 }
 
+//this function gets a tweet in type of called by reference and edits it
+//argument0: the tweet that you want to edit
+//argument1: the new text of tweet
+//argument2: username of who tweeted
+//argument3: map of sharps(because this function will add new sharps or delete some sharps)
+//returns 1
+bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& user, map < string, map< User*,vector<int> > >& sharps)
+{
+    vector<string> newSharps = findSharpsInText(newText);
+    vector<string> lastSharps = findSharpsInText(tweet.getText());
+
+    
+    //check added sharps
+    for(int i{0}; i < newSharps.size(); i++)
+    {
+        cout << "new sharp : " << newSharps[i] << ' ';
+        bool foundSharp{0};
+        for(int j{0}; j < lastSharps.size(); j++)
+        {
+            if(newSharps[i] == lastSharps[j]){
+                foundSharp = 1;
+                break;
+            }
+        }
+
+        if(foundSharp == 0)
+        {
+            //add tweet.getIndex() to sharp vector
+            sharps[newSharps.at(i)][&user].push_back(index);
+        }
+    }
+    cout << '\n';
+    // //check deleted sharps
+    for(int i{0}; i < lastSharps.size(); i++)
+    {
+        cout << "last sharp : " << lastSharps[i] << ' ';
+        bool foundSharp{0};
+        for(int j{0}; j < newSharps.size(); j++)
+        {
+            if(newSharps[i] == lastSharps[j]){
+                foundSharp = 1;
+                break;
+            }
+        }
+
+        if(foundSharp == 0)
+        {
+            //delete tweet.getIndex() from sharp vector
+            vector<int>& tweetIndexes = sharps[lastSharps.at(i)][&user];
+            unsigned size{tweetIndexes.size()};
+
+            for(int x{0}; x < size; x++)
+            {
+                if(tweetIndexes.at(x) == index)
+                {
+                    tweetIndexes.erase(tweetIndexes.begin() + x);
+                    break;
+                }
+            }
+
+            if(tweetIndexes.size() == 0)
+            {
+                sharps[lastSharps.at(i)].erase(&user);
+            }
+
+            if(sharps[lastSharps.at(i)].size() == 0)
+            {
+                sharps.erase(lastSharps.at(i));
+            }
+        }
+    }
+
+    //change text of tweet
+    tweet.setText(newText);
+    return 1;
+}
+
 //this function creates a tweet by input information and returns it
 //argument0: text of tweet
 //argument1: the username of who tweeted
@@ -189,6 +266,42 @@ Tweet Twitterak::tweet(string& text,User& user, unsigned& tweetIndex)
     return newTweet;
 }
 
+//delete a tweet
+bool Twitterak::deleteTweet(User& user, unsigned index, map < string, map< User*,vector<int> > >& sharps)
+{
+    if(user.tweets.find(index) != user.tweets.end())
+    {
+        vector<string> textSharps = findSharpsInText(user.tweets.at(index).getText());
+        for(int i{0}; i < textSharps.size(); i++)
+        {
+            vector<int>& tweetIndexes = sharps[textSharps.at(i)][&user];
+            unsigned size{tweetIndexes.size()};
+
+            for(int x{0}; x < size; x++)
+            {
+                if(tweetIndexes.at(x) == index)
+                {
+                    tweetIndexes.erase(tweetIndexes.begin() + x);
+                    break;
+                }
+            }
+
+            if(tweetIndexes.size() == 0)
+            {
+                sharps[textSharps.at(i)].erase(&user);
+            }
+
+            if(sharps[textSharps.at(i)].size() == 0)
+            {
+                sharps.erase(textSharps.at(i));
+            }
+        }
+
+        user.tweets.erase(index);
+        return 1;
+    }
+    return 0;
+}
 //called when "help" command entered
 void Twitterak::help(Terminal& t)
 {
@@ -209,13 +322,13 @@ void Twitterak::help(Terminal& t)
 
 void Twitterak::login(string& username , Terminal t){
 
-    User user = accounts[username];
+    User* user = &accounts[username];
 
     vector<string> args;
     while (1) {
 
         args.clear();
-        args = t.getCommand("> @" + user.get_username() + " ");
+        args = t.getCommand("> @" + (*user).get_username() + " ");
 
         args.at(0) = t.toLower(args.at(0));
 
@@ -313,7 +426,7 @@ void Twitterak::login(string& username , Terminal t){
 
                 if (editP == "name")
                 {
-                    user.set_name(newP);
+                    (*user).set_name(newP);
                     t.sendSuccessMessage ("Your name has been successfully changed.");
                 }
 
@@ -327,7 +440,7 @@ void Twitterak::login(string& username , Terminal t){
                     }
                     newP = t.toLower(newP); //tolowercase username
                     try{
-                        user.set_username(newP , accounts);
+                        (*user).set_username(newP , accounts);
                         username = newP;
                         t.sendSuccessMessage ("Your username has been successfully changed.");
                     }
@@ -341,7 +454,7 @@ void Twitterak::login(string& username , Terminal t){
                 else if (editP == "bio")
                 {
                     try {
-                        user.set_bio (newP , t);
+                        (*user).set_bio (newP , t);
                         t.sendSuccessMessage ("Your bio has been successfully changed.");
                     }
                     catch (invalid_argument &a) {
@@ -351,13 +464,13 @@ void Twitterak::login(string& username , Terminal t){
 
                 else if (editP == "date of birth")
                 {
-                    user.set_dateOfBirth (t);
+                    (*user).set_dateOfBirth (t);
                 }
 
                 else if (editP == "phoneumber")
                 {
                     try {
-                        user.set_phoneNumber(newP);
+                        (*user).set_phoneNumber(newP);
                         t.sendSuccessMessage ("Your phonenumber has been successfully changed.");
                     }
                     catch (invalid_argument &a) {
@@ -368,9 +481,9 @@ void Twitterak::login(string& username , Terminal t){
                 else if  (editP == "password")
                 {                        
                     string currentPass = t.getStringValue("Enter your current password : ");
-                    if (currentPass == user.get_password())
+                    if (currentPass == (*user).get_password())
                     {
-                        user.set_password(newP);
+                        (*user).set_password(newP);
                     }
                     else 
                     {
@@ -381,7 +494,7 @@ void Twitterak::login(string& username , Terminal t){
                 else if (editP == "header")
                 {
                     try {
-                        user.set_header(t);
+                        (*user).set_header(t);
                         t.sendSuccessMessage ("Your header has been successfully changed.");
                     }
                     catch (invalid_argument &err){
@@ -394,9 +507,39 @@ void Twitterak::login(string& username , Terminal t){
                     t.throwError("Undefined command.");
                 }
 
-                accounts[username] = user;
             }
+            else if(args.at(1) == "tweet" && args.size() == 3)
+            {
+                unsigned index = stoi(args.at(2));
+                if((*user).tweets.find(index) != (*user).tweets.end())
+                {
+                    t.sendMessage((*user).get_username() + " " + to_string(index)+ " :" + (*user).tweets.at(index).getText() + "\n");
+                    t.sendSuccessMessage("Enter new text for tweet " + to_string(index) + " :");
+                    vector<string> input = t.getCommand("");
+                    string tweetText;
+                    for(unsigned i{0}; i < input.size(); i++)
+                    {
+                        tweetText += input[i];
+                        tweetText += ' ';
+                    }
+
+                    editTweet((*user).tweets.at(index), index, tweetText, (*user), sharps);
+                    t.sendSuccessMessage("Your tweet has been successfully edit.");
+                }
+            } 
         
+        }
+
+        else if(args.at(0) == "delete" && args.size() == 3 && args.at(1) == "tweet")
+        {
+            if(deleteTweet((*user), stoi(args.at(2)), sharps))
+            {
+                t.sendSuccessMessage("Tweet deleted successful.");
+            }
+            else
+            {
+                t.throwError("the tweet deletation proccess failed.");
+            }
         }
 
 
@@ -411,11 +554,11 @@ void Twitterak::login(string& username , Terminal t){
                     tweetText += ' ';
                 }
 
-                unsigned tweetIndex = user.tweets.size() == 0 ?  1 : user.tweets.rbegin()->first+1;
+                unsigned tweetIndex = (*user).tweets.size() == 0 ?  1 : (*user).tweets.rbegin()->first+1;
 
-                user.tweets.insert({tweetIndex, tweet(tweetText, user, tweetIndex)});
+                (*user).tweets.insert({tweetIndex, tweet(tweetText, (*user), tweetIndex)});
 
-                accounts[username] = user;
+                t.sendSuccessMessage("Your message has been successfully tweeted.");
             }
             else
             {
@@ -433,14 +576,20 @@ void Twitterak::login(string& username , Terminal t){
                 
                 map<unsigned, Tweet> tweets = accounts[args.at(0)].tweets;
 
+                string message;
                 for (auto itr = (tweets).begin(); itr != (tweets).end(); ++itr) {
-                    string message = to_string(itr->first) + ": "+ itr->second.getText() + '\n';
+                    message = to_string(itr->first) + ": "+ itr->second.getText() + '\n';
                     t.sendMessage(message);
+                }
+
+                if(message.length() == 0)
+                {
+                    t.sendMessage("This user has not shared a tweet yet.\n");
                 }
             }
             else
             {
-
+                t.throwError("User not found.");
             }
         }
 
@@ -452,14 +601,16 @@ void Twitterak::login(string& username , Terminal t){
             {
                 for(auto it = sharps[hashtag].begin(); it != sharps[hashtag].end(); it++)
                 {
-                    vector<int> tweetIndexes = it->second;
-                    for(int i{0}; i < tweetIndexes.size(); i++) //vector size
+                    for(int i{0}; i < it->second.size(); i++) //vector size
                     {
-                        cout << i << '\n';
-                        cout << it->second.at(i) << '\n';
-                        t.sendMessage((*it->first).get_username() + " " +  to_string(it->second.at(i)) + " :" + (*it->first).tweets.at(it->second.at(i)).getText() + '\n');
+                        string message = (*it->first).get_username() + " " +  to_string(it->second.at(i)) + " :" + (*it->first).tweets.at(it->second.at(i)).getText() + '\n';
+                        t.sendMessage(message);
                     }
                 }
+            }
+            else
+            {
+                t.sendMessage("No tweets were found contain this hashtag.\n");
             }
         }
 
