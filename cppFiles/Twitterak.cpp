@@ -1,8 +1,10 @@
 #include "../headerFiles/Twitterak.h"
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <Windows.h>
 #include <map>
+#include <chrono>
 
 #include "../headerFiles/splashScreen.h"
 #include "../headerFiles/User.h"
@@ -257,6 +259,12 @@ bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& us
 //returns a object of tweet class 
 Tweet Twitterak::tweet(string& text,User& user, unsigned& tweetIndex)
 {
+    //current date and time
+    const auto now = chrono::system_clock::now();
+    const time_t t_c = chrono::system_clock::to_time_t(now);
+    string time = ctime(&t_c);
+    time.erase(time.length() -1, 1);
+    
     vector<string> textSharps = findSharpsInText(text);
     int txtsize = textSharps.size();
     for(int i{0}; i < txtsize; i++)
@@ -264,7 +272,7 @@ Tweet Twitterak::tweet(string& text,User& user, unsigned& tweetIndex)
         sharps[textSharps.at(i)][user.get_ID()].push_back(tweetIndex);
     }
 
-    Tweet newTweet(text);
+    Tweet newTweet(text, time);
     return newTweet;
 }
 
@@ -606,7 +614,14 @@ void Twitterak::login(string& username , Terminal t){
 
                 string message;
                 for (auto itr = (tweets).begin(); itr != (tweets).end(); ++itr) {
-                    message = to_string(itr->first) + ": "+ itr->second.getText() + '\n';
+                    ostringstream o;
+                    o << itr->first
+                    << " ("
+                    << itr->second.getTime()
+                    << ") : "
+                    << itr->second.getText()
+                    << '\n';
+                    message = o.str();
                     t.sendMessage(message);
                 }
 
@@ -633,7 +648,14 @@ void Twitterak::login(string& username , Terminal t){
             {
                 if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
                 {
-                    t.sendMessage(to_string(index) + ": " + accounts.at(usernameOfPost).tweets.at(index).getText() + '\n');
+                    ostringstream o;
+                    o << to_string(index)
+                    << " ("
+                    << accounts.at(usernameOfPost).tweets.at(index).getTime()
+                    << ") : "
+                    << accounts.at(usernameOfPost).tweets.at(index).getText()
+                    << '\n';
+                    t.sendMessage(o.str());
                 }
                 else
                 {
