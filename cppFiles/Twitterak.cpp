@@ -132,27 +132,27 @@ inline vector<string> findSharpsInText(string text)
 {
     vector<string> sharps;
     unsigned begin{0};
-    for(int i{0}; i < text.length(); i++)
+    int textsize = text.length();
+    for(int i{0}; i < textsize; i++)
     {
-        if(text.at(i) == '#')
+        if(text[i] == '#')
         {
             begin = i+1;
-            for(int j{i+1}; j < text.length(); j++)
+            for(int j{i+1}; j < textsize; j++)
             {
-                if(text.at(j) == '#')
+                if(text[j] == '#')
                 {
                     begin = j+1;
                 }
                 else if(text.at(j) == ' ')
                 {
-                    if(j == 0)
-                        break;
                     string sharp = text.substr(begin, j-begin);       
                     sharps.push_back(sharp);
                     i = j;
                     break;
 
-                }else if(j == text.length()-1)
+                }
+                else if(j == textsize-1)
                 {
                     string sharp = text.substr(begin, j-begin+1);       
                     sharps.push_back(sharp);
@@ -261,7 +261,8 @@ bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& us
 Tweet Twitterak::tweet(string& text,User& user, unsigned& tweetIndex)
 {
     vector<string> textSharps = findSharpsInText(text);
-    for(int i{0}; i < textSharps.size(); i++)
+    int txtsize = textSharps.size();
+    for(int i{0}; i < txtsize; i++)
     {
         sharps[textSharps.at(i)][&user].push_back(tweetIndex);
     }
@@ -275,15 +276,16 @@ bool Twitterak::deleteTweet(User& user, unsigned index, map < string, map< User*
 {
     if(user.tweets.find(index) != user.tweets.end())
     {
-        vector<string> textSharps = findSharpsInText(user.tweets.at(index).getText());
-        for(int i{0}; i < textSharps.size(); i++)
+        vector <string> textSharps = findSharpsInText(user.tweets.at(index).getText());
+        int sharpsize = textSharps.size();
+        for(int i{0}; i < sharpsize ; i++)
         {
-            vector<int>& tweetIndexes = sharps[textSharps.at(i)][&user];
+            vector<int>& tweetIndexes = sharps[textSharps[i]][&user];
             unsigned size{tweetIndexes.size()};
 
             for(int x{0}; x < size; x++)
             {
-                if(tweetIndexes.at(x) == index)
+                if(tweetIndexes[x] == index)
                 {
                     tweetIndexes.erase(tweetIndexes.begin() + x);
                     break;
@@ -334,13 +336,15 @@ void Twitterak::login(string& username , Terminal t){
         args.clear();
         args = t.getCommand("> @" + (*user).get_username() + " > ");
 
-        args.at(0) = t.toLower(args.at(0));
+        if (args[0][0] != '#'){
+            args.at(0) = t.toLower(args.at(0));
+        }
 
 
 
 
 
-        if (args.at(0) == "me")
+        if (args.at(0) == "me" || args.at(0) == "@me")
         {
            profile( username , accounts, t);
         }
@@ -402,8 +406,6 @@ void Twitterak::login(string& username , Terminal t){
         }
 
 
-
-
         else if ( args.at(0) == "edit")
         {
             if (args.size() >= 2)
@@ -422,11 +424,15 @@ void Twitterak::login(string& username , Terminal t){
                             newP = t.getStringValue ("Enter the new change. ");
                         }
                     }
-                    else
+                    else if (args.size() == 4)
                     {
                         editP = args.at(2);
                         editP = t.toLower(editP); // tolowercase edetP
                         newP = args.at(3);
+                    }
+                    else 
+                    {
+                        t.throwError("Undefined command.");
                     }
 
 
@@ -544,6 +550,9 @@ void Twitterak::login(string& username , Terminal t){
                         t.sendSuccessMessage("Your tweet has been successfully edit.");
                     }
                 } 
+                else {
+                    t.throwError("Undefined command.");
+                }
             }
             else {
                 t.throwError("Undefined command.");
@@ -556,24 +565,25 @@ void Twitterak::login(string& username , Terminal t){
             if(args.size() > 1)
             {
                 string tweetText;
-                for(int i{1}; i < args.size(); i++)
+                int argsize = args.size();
+                for(int i{1}; i < argsize ; i++)
                 {
                     tweetText += args[i];
                     tweetText += ' ';
                 }
 
-                unsigned tweetIndex = (*user).tweets.size() == 0 ?  1 : (*user).tweets.rbegin()->first+1;
+                unsigned tweetIndex = user -> tweets.size() == 0 ?  1 : user -> tweets.rbegin() -> first+1;
 
-                (*user).tweets.insert({tweetIndex, tweet(tweetText, *user, tweetIndex)});
+                user -> tweets.insert({tweetIndex, tweet(tweetText, *user, tweetIndex)});
 
-                accounts[username] = *user;
             }
             else
             {
-                t.throwError("Text of tweet cant be empty.");
+                t.throwError("Text of tweet can not be empty.");
             }
 
         }
+
 
         else if(args.at(0) == "delete" && args.size() == 3 && args.at(1) == "tweet")
         {
@@ -583,31 +593,7 @@ void Twitterak::login(string& username , Terminal t){
             }
             else
             {
-                t.throwError("the tweet deletation proccess failed.");
-            }
-        }
-
-
-        else if( args.at(0) == "tweet")
-        {
-            if(args.size() > 1)
-            {
-                string tweetText;
-                for(int i{1}; i < args.size(); i++)
-                {
-                    tweetText += args[i];
-                    tweetText += ' ';
-                }
-
-                unsigned tweetIndex = (*user).tweets.size() == 0 ?  1 : (*user).tweets.rbegin()->first+1;
-
-                (*user).tweets.insert({tweetIndex, tweet(tweetText, (*user), tweetIndex)});
-
-                t.sendSuccessMessage("Your message has been successfully tweeted.");
-            }
-            else
-            {
-                t.throwError("text of tweet cant be empty.");
+                t.throwError("The tweet deletation proccess failed.");
             }
         }
 
@@ -691,7 +677,8 @@ void Twitterak::login(string& username , Terminal t){
             {
                 for(auto it = sharps[hashtag].begin(); it != sharps[hashtag].end(); it++)
                 {
-                    for(int i{0}; i < it->second.size(); i++) //vector size
+                    int size {it->second.size()};
+                    for(int i{0}; i < size; i++) //vector size
                     {
                         string message = (*it->first).get_username() + " " +  to_string(it->second.at(i)) + " :" + (*it->first).tweets.at(it->second.at(i)).getText() + '\n';
                         t.sendMessage(message);
@@ -729,7 +716,7 @@ void Twitterak::login(string& username , Terminal t){
                     }
                     else
                     {
-                        t.sendMessage("Couldnt find any index with this index.\n");
+                        t.sendMessage("Couldnt find any tweet with this index.\n");
                     }
                 }
                 else
@@ -760,16 +747,16 @@ void Twitterak::login(string& username , Terminal t){
                     {
                         if(accounts.at(usernameOfPost).tweets.at(index).dislikeTweet(&accounts.at(username)))
                         {
-                            t.sendSuccessMessage("Disiked successfully.");
+                            t.sendSuccessMessage("Disiked successfully.\n");
                         }
                         else
                         {
-                            t.sendMessage("You have already disliked this tweet.\n");
+                            t.sendMessage("You have not liked this post.\n");
                         }
                     }
                     else
                     {
-                        t.sendMessage("Couldnt find any index with this index.\n");
+                        t.sendMessage("Could not find any tweet with this index.\n");
                     }
                 }
                 else
@@ -793,10 +780,16 @@ void Twitterak::login(string& username , Terminal t){
         {
             system ("cls");
         }
+        
         else if ( args.at(0) == "logout")
         {
             break;
         }
+        
+        else if (args[0] == "exit"){
+            exit (0);
+        }
+
         else 
         {
             t.throwError("Undefined command.");
@@ -853,6 +846,9 @@ void Twitterak::run(){
         else if (args[0] == "cls")
         {
             system("cls");
+        }
+        else if (args[0] == "exit"){
+            exit (0);
         }
         else {
             t.throwError("Undefined command.");

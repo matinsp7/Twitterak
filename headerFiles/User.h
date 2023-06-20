@@ -38,5 +38,6 @@ private:
     std::string phoneNumber;
     std::string password;
     std::string header {"white"};
+    int ID;
 };
 #endif

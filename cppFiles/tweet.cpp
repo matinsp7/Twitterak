@@ -8,7 +8,7 @@ using namespace std;
 //arguments: text of tweet
 Tweet::Tweet(string& text)
 {
-tweetText = text;
+    tweetText = text;
 }
 
 void Tweet::setText(string& text){
@@ -23,7 +23,8 @@ string Tweet::getText() const{
 //returns true if tweet liked
 bool Tweet::likeTweet(User* user)
 {
-    for(int i{0}; i < likes.size(); i++)
+    int size = likes.size();
+    for(int i{0}; i < size ; i++)
     {
         if(likes[i] == user)
         {
