@@ -660,7 +660,14 @@ void Twitterak::login(string& username , Terminal t){
             {
                 if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
                 {
-                    t.sendMessage("likes : " + to_string(accounts.at(usernameOfPost).tweets.at(index).likes.size()) + '\n');
+                    int likesize = accounts.at(usernameOfPost).tweets.at(index).likes.size();
+                    t.sendMessage("likes : " + to_string(likesize) + '\n');
+                    for (int i=0 ; i<likesize ; i++){
+                        t.sendMessage('@' + accounts.at(usernameOfPost).tweets.at(index).likes[i] -> get_username() + '\n');
+                    }
+                }
+                else {
+                    t.sendMessage("The user has no post with this index.");
                 }
             }
             else
@@ -677,7 +684,7 @@ void Twitterak::login(string& username , Terminal t){
             {
                 for(auto it = sharps[hashtag].begin(); it != sharps[hashtag].end(); it++)
                 {
-                    int size {it->second.size()};
+                    int size = it->second.size();
                     for(int i{0}; i < size; i++) //vector size
                     {
                         string message = (*it->first).get_username() + " " +  to_string(it->second.at(i)) + " :" + (*it->first).tweets.at(it->second.at(i)).getText() + '\n';
@@ -716,7 +723,7 @@ void Twitterak::login(string& username , Terminal t){
                     }
                     else
                     {
-                        t.sendMessage("Couldnt find any tweet with this index.\n");
+                        t.sendMessage("Could not find any tweet with this index.\n");
                     }
                 }
                 else

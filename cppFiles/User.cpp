@@ -9,6 +9,11 @@
 
 using namespace std;
 
+User::User(){
+    static int id{0};
+    ID = id++;
+}
+
 void User::set_name(string name){
     this->name = name;
 }
@@ -148,4 +153,8 @@ void User::set_header(string color){
 
 string User::get_header() const{
     return header;
+}
+
+int User::get_ID () const{
+    return ID;
 }

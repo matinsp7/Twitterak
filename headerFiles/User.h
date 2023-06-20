@@ -10,6 +10,7 @@
 
 class User {
     public:
+    User();
     void set_name(std::string);
     std::string get_name() const;
     void set_gender(std::string);
@@ -26,6 +27,7 @@ class User {
     std::string get_password() const;
     void set_header(std::string);
     std::string get_header() const;
+    int get_ID () const;
 
     std::map<unsigned, Tweet> tweets;
 

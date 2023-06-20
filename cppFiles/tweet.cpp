@@ -24,9 +24,10 @@ string Tweet::getText() const{
 bool Tweet::likeTweet(User* user)
 {
     int size = likes.size();
+    int Id = user->get_ID();
     for(int i{0}; i < size ; i++)
     {
-        if(likes[i] == user)
+        if(likes[i]->get_ID() == Id)
         {
             return 0;
         }
