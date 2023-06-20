@@ -12,7 +12,7 @@
 using namespace std;
 
 map<string, User> Twitterak::accounts;
-map <string, map<User*, vector<int>> > Twitterak::sharps;
+map <string, map<int, vector<int>> > Twitterak::sharps;
 
 void Twitterak::signup (Terminal t , string un = "signup"){
     User new_user;
@@ -181,7 +181,7 @@ inline vector<string> findSharpsInText(string text)
 //argument2: username of who tweeted
 //argument3: map of sharps(because this function will add new sharps or delete some sharps)
 //returns 1
-bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& user, map < string, map< User*,vector<int> > >& sharps)
+bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& user, map < string, map< int,vector<int> > >& sharps)
 {
     vector<string> newSharps = findSharpsInText(newText);
     vector<string> lastSharps = findSharpsInText(tweet.getText());
@@ -190,7 +190,6 @@ bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& us
     //check added sharps
     for(int i{0}; i < newSharps.size(); i++)
     {
-        cout << "new sharp : " << newSharps[i] << ' ';
         bool foundSharp{0};
         for(int j{0}; j < lastSharps.size(); j++)
         {
@@ -203,14 +202,12 @@ bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& us
         if(foundSharp == 0)
         {
             //add tweet.getIndex() to sharp vector
-            sharps[newSharps.at(i)][&user].push_back(index);
+            sharps[newSharps.at(i)][user.get_ID()].push_back(index);
         }
     }
-    cout << '\n';
     // //check deleted sharps
     for(int i{0}; i < lastSharps.size(); i++)
     {
-        cout << "last sharp : " << lastSharps[i] << ' ';
         bool foundSharp{0};
         for(int j{0}; j < newSharps.size(); j++)
         {
@@ -223,7 +220,7 @@ bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& us
         if(foundSharp == 0)
         {
             //delete tweet.getIndex() from sharp vector
-            vector<int>& tweetIndexes = sharps[lastSharps.at(i)][&user];
+            vector<int>& tweetIndexes = sharps[lastSharps.at(i)][user.get_ID()];
             unsigned size{tweetIndexes.size()};
 
             for(int x{0}; x < size; x++)
@@ -237,7 +234,7 @@ bool Twitterak::editTweet(Tweet& tweet, unsigned index, string newText, User& us
 
             if(tweetIndexes.size() == 0)
             {
-                sharps[lastSharps.at(i)].erase(&user);
+                sharps[lastSharps.at(i)].erase(user.get_ID());
             }
 
             if(sharps[lastSharps.at(i)].size() == 0)
@@ -264,7 +261,7 @@ Tweet Twitterak::tweet(string& text,User& user, unsigned& tweetIndex)
     int txtsize = textSharps.size();
     for(int i{0}; i < txtsize; i++)
     {
-        sharps[textSharps.at(i)][&user].push_back(tweetIndex);
+        sharps[textSharps.at(i)][user.get_ID()].push_back(tweetIndex);
     }
 
     Tweet newTweet(text);
@@ -272,7 +269,7 @@ Tweet Twitterak::tweet(string& text,User& user, unsigned& tweetIndex)
 }
 
 //delete a tweet
-bool Twitterak::deleteTweet(User& user, unsigned index, map < string, map< User*,vector<int> > >& sharps)
+bool Twitterak::deleteTweet(User& user, unsigned index, map < string, map< int,vector<int> > >& sharps)
 {
     if(user.tweets.find(index) != user.tweets.end())
     {
@@ -280,7 +277,7 @@ bool Twitterak::deleteTweet(User& user, unsigned index, map < string, map< User*
         int sharpsize = textSharps.size();
         for(int i{0}; i < sharpsize ; i++)
         {
-            vector<int>& tweetIndexes = sharps[textSharps[i]][&user];
+            vector<int>& tweetIndexes = sharps[textSharps[i]][user.get_ID()];
             unsigned size{tweetIndexes.size()};
 
             for(int x{0}; x < size; x++)
@@ -294,7 +291,7 @@ bool Twitterak::deleteTweet(User& user, unsigned index, map < string, map< User*
 
             if(tweetIndexes.size() == 0)
             {
-                sharps[textSharps.at(i)].erase(&user);
+                sharps[textSharps.at(i)].erase(user.get_ID());
             }
 
             if(sharps[textSharps.at(i)].size() == 0)
@@ -660,10 +657,16 @@ void Twitterak::login(string& username , Terminal t){
             {
                 if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
                 {
-                    int likesize = accounts.at(usernameOfPost).tweets.at(index).likes.size();
-                    t.sendMessage("likes : " + to_string(likesize) + '\n');
-                    for (int i=0 ; i<likesize ; i++){
-                        t.sendMessage('@' + accounts.at(usernameOfPost).tweets.at(index).likes[i] -> get_username() + '\n');
+                    vector<int>& likes = accounts.at(usernameOfPost).tweets.at(index).likes;
+                    t.sendMessage("likes : " + to_string(likes.size()) + '\n');
+                    for (int i=0 ; i < likes.size() ; i++){
+                        for(auto it = accounts.begin(); it != accounts.end(); it++)
+                        {
+                            if(it->second.get_ID() == likes[i])
+                            {
+                                t.sendMessage('@' + it->second.get_username() + '\n');
+                            }
+                        }
                     }
                 }
                 else {
@@ -684,10 +687,22 @@ void Twitterak::login(string& username , Terminal t){
             {
                 for(auto it = sharps[hashtag].begin(); it != sharps[hashtag].end(); it++)
                 {
+                    //find user
+                    User tmp;
+                    for(auto itA = accounts.begin(); itA != accounts.end(); itA++)
+                    {
+                        if(itA->second.get_ID() == it->first)
+                        {
+                            tmp = itA->second;
+                        }
+                    }
+
                     int size = it->second.size();
                     for(int i{0}; i < size; i++) //vector size
                     {
-                        string message = (*it->first).get_username() + " " +  to_string(it->second.at(i)) + " :" + (*it->first).tweets.at(it->second.at(i)).getText() + '\n';
+                        
+                        string message = tmp.get_username() + " " +  to_string(it->second.at(i)) + " :" + tmp.tweets.at(it->second.at(i)).getText() + '\n';
+                        
                         t.sendMessage(message);
                     }
                 }
@@ -754,7 +769,7 @@ void Twitterak::login(string& username , Terminal t){
                     {
                         if(accounts.at(usernameOfPost).tweets.at(index).dislikeTweet(&accounts.at(username)))
                         {
-                            t.sendSuccessMessage("Disiked successfully.\n");
+                            t.sendSuccessMessage("Disiked successfully.");
                         }
                         else
                         {
