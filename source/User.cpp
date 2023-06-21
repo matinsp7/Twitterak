@@ -3,9 +3,9 @@
 #include <string>
 #include <map>
 
-#include "../headerFiles/date.h"
-#include "../headerFiles/User.h"
-#include "../headerFiles/terminal.h"
+#include "../include/date.h"
+#include "../include/User.h"
+#include "../include/terminal.h"
 
 using namespace std;
 
