@@ -36,6 +36,7 @@ void User::set_gender(string gender){
 string User::get_gender (){
     return gender;
 }
+
 void User::set_username(string username , map<string, User> accounts)
 {
 
@@ -79,7 +80,7 @@ void User::set_bio(string bio){
     }
     else {
         throw invalid_argument(
-            "Username can be a maximum of 160 characters !"
+            "Username can be a maximum of 160 characters."
         );
     }
 }
@@ -88,21 +89,24 @@ string User::get_bio () const{
     return bio;
 }
 
-void User::set_dateOfBirth(Terminal& t){
-    bool flag = 0;
-    int d , m , y;
-    d = t.getIntValue("Day");
-    m = t.getIntValue("Month");
-    y = t.getIntValue("Year");
-    try {
-        dateOfBirth.set_day (d);
-        dateOfBirth.set_month (m);
-        dateOfBirth.set_year (y);
-        t.sendSuccessMessage ("Your birthdate has been successfully changed.");
-    }
-    catch (out_of_range &a) {
-        cout << a.what() << endl;
-    }
+void User::set_country (string country){
+    this -> country = country;
+}
+
+string User:: get_country (){
+    return country;
+} 
+
+void User::set_link (string link){
+    this -> link = link;
+}
+
+string User::get_link (){
+    return link;
+}
+
+void User::set_dateOfBirth(int d , int m , int y , Terminal t){
+    Date birthdate(d , m , y , t);
 }
 
 Date User::get_DateOfBirth() const{
@@ -120,7 +124,7 @@ void User::set_phoneNumber(string phone){
         );
     }*/
     for (size_t i=0 ; i<size ; i++){
-        if ( !isalnum(phone[i]) ){
+        if ( !isdigit(phone[i]) ){
             throw invalid_argument (
             "The phone number is incorrect."
             );
