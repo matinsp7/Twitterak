@@ -665,10 +665,11 @@ void Twitterak::login(string& username , Terminal t){
                     if (args[1][0] == '@'){
                         args[1].erase(0 , 1);
                     }
+                    
                     args[1] = t.toLower(args[1]);
                     if (accounts.find(args[1]) != accounts.end()){
-                        if (accounts[args[1]].tweets.find(stoi(args[3])) != accounts[args[1]].tweets.end()){
-                            unsigned tweetIndex = user -> tweets.size() == 0 ?  1 : user -> tweets.rbegin() -> first+1;
+                        if (accounts[args[1]].tweets.find(stoi(args[2])) != accounts[args[1]].tweets.end()){
+                            int tweetIndex = user -> tweets.size() == 0 ?  1 : user -> tweets.rbegin() -> first+1;
                             user -> tweets.insert ({tweetIndex , accounts[args[1]].tweets.at(stoi(args[2]))});
                         }
                         else {
