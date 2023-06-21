@@ -7,7 +7,8 @@
 class Date {
 
 public:
-
+    Date (); 
+    Date (int , int , int , Terminal);
     void set_day(int);
     void set_month(int);
     void set_year(int);

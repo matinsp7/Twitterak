@@ -45,8 +45,8 @@ void Twitterak::signup (Terminal t , string un = "signup"){
         }
     }
 
-    string name = t.getStringValue("Name ");
-    new_user.set_name(name);
+    // string name = t.getStringValue("Name ");
+    // new_user.set_name(name);
 
     string gender = t.getStringValue("Gender (man/woman) ");
     gender = t.toLower(gender);
@@ -58,17 +58,17 @@ void Twitterak::signup (Terminal t , string un = "signup"){
         return ;
     }
 
-    string password = t.getStringValue("Password");
-    new_user.set_password(password);
+    // string password = t.getStringValue("Password");
+    // new_user.set_password(password);
 
-    string Phonenumber = t.getStringValue("Phone number");
-    try {
-        new_user.set_phoneNumber(Phonenumber);
-    }
-    catch (invalid_argument &err){
-        t.throwError (err.what());
-        return ;
-    }
+    // string Phonenumber = t.getStringValue("Phone number");
+    // try {
+    //     new_user.set_phoneNumber(Phonenumber);
+    // }
+    // catch (invalid_argument &err){
+    //     t.throwError (err.what());
+    //     return ;
+    // }
 
     accounts[username] =  new_user;
 
@@ -424,11 +424,11 @@ void Twitterak::login(string& username , Terminal t){
                 {
                     string editP;
                     string newP;
-                    if (args.size() == 2)
+                    if (args.size() == 2)  //this mode is just for the command edit profile
                     {
                         profile(username , accounts, t);
-                        editP = t.getStringValue("What do you want to change? ");
-                        editP = t.toLower(editP); // tolowercase edetP
+                        editP = t.getStringValue("What do you want to change ? ");
+                        editP = t.toLower(editP);
                         if (editP != "date of birth" && editP != "header"){
                             newP = t.getStringValue ("Enter the new change. ");
                         }
@@ -436,14 +436,9 @@ void Twitterak::login(string& username , Terminal t){
                     else if (args.size() == 4)
                     {
                         editP = args.at(2);
-                        editP = t.toLower(editP); // tolowercase edetP
+                        editP = t.toLower(editP);
                         newP = args.at(3);
                     }
-                    else 
-                    {
-                        t.throwError("Undefined command.");
-                    }
-
 
                     if (editP == "name")
                     {
@@ -474,7 +469,6 @@ void Twitterak::login(string& username , Terminal t){
                     }
                     
 
-
                     else if (editP == "bio")
                     {
                         try {
@@ -489,7 +483,11 @@ void Twitterak::login(string& username , Terminal t){
 
                     else if (editP == "date of birth")
                     {
-                        user -> set_dateOfBirth (t);
+                        int d , m , y;
+                        d = t.getIntValue("Day");
+                        m = t.getIntValue("Month");
+                        y = t.getIntValue("Year");
+                        user -> set_dateOfBirth (d , m , y , t);
                     }
 
 
@@ -842,6 +840,8 @@ void Twitterak::login(string& username , Terminal t){
         {
             t.throwError("Undefined command.");
         }
+    
+        args.clear();
     }
 }
 

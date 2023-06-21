@@ -19,7 +19,7 @@ class User {
     std::string get_username() const;
     void set_bio(std::string, Terminal);
     std::string get_bio() const;
-    void set_dateOfBirth(Terminal);
+    void set_dateOfBirth(int , int , int , Terminal);
     Date get_DateOfBirth() const;
     void set_phoneNumber(std::string);
     std::string get_phoneNumber() const;

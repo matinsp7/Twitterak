@@ -79,7 +79,7 @@ void User::set_bio(string bio, Terminal t){
     }
     else {
         throw invalid_argument(
-            "Username can be a maximum of 160 characters !"
+            "Username can be a maximum of 160 characters."
         );
     }
 }
@@ -88,21 +88,8 @@ string User::get_bio () const{
     return bio;
 }
 
-void User::set_dateOfBirth(Terminal t){
-    bool flag = 0;
-    int d , m , y;
-    d = t.getIntValue("Day");
-    m = t.getIntValue("Month");
-    y = t.getIntValue("Year");
-    try {
-        dateOfBirth.set_day (d);
-        dateOfBirth.set_month (m);
-        dateOfBirth.set_year (y);
-        t.sendSuccessMessage ("Your birthdate has been successfully changed.");
-    }
-    catch (out_of_range &a) {
-        cout << a.what() << endl;
-    }
+void User::set_dateOfBirth(int d , int m , int y , Terminal t){
+    Date birthdate(d , m , y , t);
 }
 
 Date User::get_DateOfBirth() const{
