@@ -665,7 +665,7 @@ void Twitterak::login(string& username , Terminal t){
                     if (args[1][0] == '@'){
                         args[1].erase(0 , 1);
                     }
-                    
+
                     args[1] = t.toLower(args[1]);
                     if (accounts.find(args[1]) != accounts.end()){
                         if (accounts[args[1]].tweets.find(stoi(args[2])) != accounts[args[1]].tweets.end()){
@@ -704,6 +704,11 @@ void Twitterak::login(string& username , Terminal t){
                 string ans = t.sendQuestion("This operation cannot bereversed in any way. Are you sure?(y/n) ");
                 ans = t.toLower(ans);
                 if ( ans == "y"){
+                    int size = user->tweets.size();
+                    for(unsigned i{1}; i <= size; i++)
+                    {
+                        deleteTweet((*user), i, sharps);
+                    }
                     accounts.erase(username);
                     break;
                 }
