@@ -9,7 +9,7 @@
 #endif
 
 using namespace std;
-#include "../headerFiles/terminal.h"
+#include "../include/terminal.h"
 
 
     Terminal::Terminal( std::istream& iStream, std::ostream& oStream )
