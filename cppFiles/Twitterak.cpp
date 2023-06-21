@@ -119,13 +119,16 @@ void Twitterak::check_validation (Terminal t){
 inline void profile (string& username , map<string, User> accounts, Terminal t){
     User user = accounts[username];
     t.sendMessage("Name : " + user.get_name()+'\n');
+    t.sendMessage("Gender : " + user.get_gender()+'\n');
     t.sendMessage("Username : " + user.get_username()+'\n');
-    t.sendMessage("bio : " + user.get_bio()+'\n');
+    t.sendMessage("Bio : " + user.get_bio()+'\n');
+    t.sendMessage("Country : " + user.get_country()+'\n');
+    t.sendMessage("Link : " + user.get_link()+'\n');
     t.sendMessage("Date of birth : " + to_string(user.get_DateOfBirth().get_year()) + "/");
     t.sendMessage(to_string(user.get_DateOfBirth().get_month()) + "/");
     t.sendMessage(to_string(user.get_DateOfBirth().get_day())+'\n');
     t.sendMessage("Phone number : " + user.get_phoneNumber()+'\n');
-    t.sendMessage("Header : " + user.get_header()+'\n');
+    t.sendMessage("Header color : " + user.get_header()+'\n');
 }
 
 //argument0: the text that contains sharps
@@ -446,6 +449,15 @@ void Twitterak::login(string& username , Terminal t){
                         t.sendSuccessMessage ("Your name has been successfully changed.");
                     }
 
+                    else if (editP == "gender"){
+                        try {
+                            user -> set_gender(newP);
+                        }
+                        catch (invalid_argument &err) {
+                            t.throwError (err.what());
+                        }
+                    }
+
 
                     else if (editP == "username")
                     {
@@ -478,6 +490,14 @@ void Twitterak::login(string& username , Terminal t){
                         catch (invalid_argument &a) {
                             t.throwError(a.what());
                         }
+                    }
+
+                    else if (editP == "country"){
+                        user -> set_country(newP);
+                    }
+
+                    else if (editP == "link"){
+                        user -> set_link(newP);
                     }
 
 

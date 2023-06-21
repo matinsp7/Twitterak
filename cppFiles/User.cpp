@@ -36,6 +36,7 @@ void User::set_gender(string gender){
 string User::get_gender (){
     return gender;
 }
+
 void User::set_username(string username , map<string, User> accounts)
 {
 
@@ -86,6 +87,22 @@ void User::set_bio(string bio, Terminal t){
 
 string User::get_bio () const{
     return bio;
+}
+
+void User::set_country (string country){
+    this -> country = country;
+}
+
+string User:: get_country (){
+    return country;
+} 
+
+void User::set_link (string link){
+    this -> link = link;
+}
+
+string User::get_link (){
+    return link;
 }
 
 void User::set_dateOfBirth(int d , int m , int y , Terminal t){

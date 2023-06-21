@@ -19,6 +19,10 @@ class User {
     std::string get_username() const;
     void set_bio(std::string, Terminal);
     std::string get_bio() const;
+    void set_country (std::string);
+    std::string get_country ();
+    void set_link (std::string);
+    std::string get_link ();
     void set_dateOfBirth(int , int , int , Terminal);
     Date get_DateOfBirth() const;
     void set_phoneNumber(std::string);
@@ -36,6 +40,8 @@ private:
     std::string gender;
     std::string username;
     std::string bio;
+    std::string country;
+    std::string link;
     Date dateOfBirth;
     std::string phoneNumber;
     std::string password;
