@@ -585,7 +585,6 @@ void Twitterak::login(string& username , Terminal t){
             }
         }
 
-
         else if( args.at(0) == "tweet")
         {
             if(argsize > 1)
@@ -607,6 +606,35 @@ void Twitterak::login(string& username , Terminal t){
                 t.throwError("Text of tweet can not be empty.");
             }
 
+        }
+
+        else if (args[0] == "retweet"){
+            if (argsize == 3){
+                if (!isdigit(args[2][0])){
+                    t.throwError("Undefined command.");
+                }
+                else {
+                    if (args[1][0] == '@'){
+                        args[1].erase(0 , 1);
+                    }
+                    args[1] = t.toLower(args[1]);
+                    if (accounts.find(args[1]) != accounts.end()){
+                        if (accounts[args[1]].tweets.find(stoi(args[3])) != accounts[args[1]].tweets.end()){
+                            unsigned tweetIndex = user -> tweets.size() == 0 ?  1 : user -> tweets.rbegin() -> first+1;
+                            user -> tweets.insert ({tweetIndex , accounts[args[1]].tweets.at(stoi(args[2]))});
+                        }
+                        else {
+                            t.throwError("could not find any tweet with this index.");
+                        }
+                    }
+                    else {
+                        t.throwError("User nou found.");
+                    }
+                }
+            }
+            else {
+                t.throwError("Undefined command.");
+            }
         }
 
 
