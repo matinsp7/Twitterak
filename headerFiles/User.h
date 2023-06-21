@@ -17,9 +17,9 @@ class User {
     std::string get_gender();
     void set_username(std::string , std::map<std::string, User>);
     std::string get_username() const;
-    void set_bio(std::string, Terminal);
+    void set_bio(std::string);
     std::string get_bio() const;
-    void set_dateOfBirth(Terminal);
+    void set_dateOfBirth(Terminal&);
     Date get_DateOfBirth() const;
     void set_phoneNumber(std::string);
     std::string get_phoneNumber() const;

@@ -73,7 +73,7 @@ string User::get_username() const{
     return username;
 }
 
-void User::set_bio(string bio, Terminal t){
+void User::set_bio(string bio){
     if (bio.size()<160){
         this -> bio = bio;
     }
@@ -88,7 +88,7 @@ string User::get_bio () const{
     return bio;
 }
 
-void User::set_dateOfBirth(Terminal t){
+void User::set_dateOfBirth(Terminal& t){
     bool flag = 0;
     int d , m , y;
     d = t.getIntValue("Day");
