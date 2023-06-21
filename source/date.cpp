@@ -1,6 +1,6 @@
 #include <stdexcept>
-#include "../headerFiles/date.h"
-#include "../headerFiles/terminal.h"
+#include "../include/date.h"
+#include "../include/terminal.h"
 
 using namespace std;
 
