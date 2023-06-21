@@ -39,17 +39,16 @@ string User::get_gender (){
 
 void User::set_username(string username , map<string, User> accounts)
 {
+    int usersize = username.length();
+    if (usersize < 5){
+        throw invalid_argument(
+            "! Username must have at least 5 characters. Please try again :"
+        );
+    }
 
     if (accounts.find(username) != accounts.end()){
         throw invalid_argument(
             "Username already taken! Please try again :"
-        );
-    }
-
-    int usersize = username.size();
-    if (usersize < 5){
-        throw invalid_argument(
-            "! Username must have at least 5 characters. Please try again :"
         );
     }
 

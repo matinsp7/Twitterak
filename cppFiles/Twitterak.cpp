@@ -21,11 +21,11 @@ void Twitterak::signup (Terminal t , string username = ""){
 
     t.sendMessage("Thank you for your choice.\n");
 
-    if (username.empty()){
+    if(username.empty()){
         username = t.getStringValue("Username ");
     }
     while (1) {
-        if (username.at(0) == '@'){    //to remove @
+        if (username.length() > 0 && username.at(0) == '@'){    //to remove @
             username.erase(0 , 1);
         }
 
