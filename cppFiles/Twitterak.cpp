@@ -347,9 +347,7 @@ void Twitterak::login(string& username , Terminal t){
             args.at(0) = t.toLower(args.at(0));
         }
 
-
-
-
+        int argsize = args.size();
 
         if (args.at(0) == "me")
         {
@@ -359,13 +357,13 @@ void Twitterak::login(string& username , Terminal t){
 
         else if (args.at(0) == "profile")
         {
-            if (args.size() == 1)
+            if (argsize == 1)
             {
                 profile( username , accounts, t);
             }
-            else if (args.size() == 2)
+            else if (argsize== 2)
             {
-                if (args.at(1).at(0) == '@') // to remove @
+                if (args[1][0] == '@') // to remove @
                 {       
                     args.at(1).erase(0 , 1);
                 }
@@ -418,14 +416,14 @@ void Twitterak::login(string& username , Terminal t){
 
         else if ( args.at(0) == "edit")
         {
-            if (args.size() >= 2)
+            if (argsize >= 2)
             {
                 args.at(1) = t.toLower(args.at(1));
                 if (args.at(1) == "profile")
                 {
                     string editP;
                     string newP;
-                    if (args.size() == 2)  //this mode is just for the command edit profile
+                    if (argsize == 2)  //this mode is just for the command edit profile
                     {
                         profile(username , accounts, t);
                         editP = t.getStringValue("What do you want to change ? ");
@@ -434,7 +432,7 @@ void Twitterak::login(string& username , Terminal t){
                             newP = t.getStringValue ("Enter the new change. ");
                         }
                     }
-                    else if (args.size() == 4)
+                    else if (argsize == 4)
                     {
                         editP = args.at(2);
                         editP = t.toLower(editP);
@@ -590,10 +588,9 @@ void Twitterak::login(string& username , Terminal t){
 
         else if( args.at(0) == "tweet")
         {
-            if(args.size() > 1)
+            if(argsize > 1)
             {
                 string tweetText;
-                int argsize = args.size();
                 for(int i{1}; i < argsize ; i++)
                 {
                     tweetText += args[i];
@@ -616,7 +613,6 @@ void Twitterak::login(string& username , Terminal t){
         else if(args.at(0) == "delete")
         {
             args[1] == t.toLower(args[1]);
-            int argsize = args.size();
             if (argsize == 3 && args[1] == "tweet"){
                 if(deleteTweet((*user), stoi(args.at(2)), sharps))
                 {
@@ -644,7 +640,7 @@ void Twitterak::login(string& username , Terminal t){
             }
         }
 
-        else if( args.at(0).at(0) == '@' && args.size() == 1)
+        else if( args.at(0).at(0) == '@' && argsize == 1)
         {
             //its @username command
             args.at(0).erase(0 , 1);
@@ -678,39 +674,44 @@ void Twitterak::login(string& username , Terminal t){
             }
         }
 
-        else if( args.at(0).at(0) == '@' && args.size() == 2)
+        else if( args.at(0).at(0) == '@' && argsize == 2)
         {
             //its @username:index command
-            args.at(0).erase(0,1);
+            if (!isdigit(args[1][0])){
+                t.throwError("Undefined command.");
+            }
+            else {
+                args.at(0).erase(0,1);
 
-            string usernameOfPost = args.at(0);
-            int index = stoi(args.at(1));
-            
-            if(accounts.find(usernameOfPost) != accounts.end())
-            {
-                if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+                string usernameOfPost = args.at(0);
+                int index = stoi(args.at(1));
+                
+                if(accounts.find(usernameOfPost) != accounts.end())
                 {
-                    ostringstream o;
-                    o << to_string(index)
-                    << " ("
-                    << accounts.at(usernameOfPost).tweets.at(index).getTime()
-                    << ") : "
-                    << accounts.at(usernameOfPost).tweets.at(index).getText()
-                    << '\n';
-                    t.sendMessage(o.str());
+                    if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+                    {
+                        ostringstream o;
+                        o << to_string(index)
+                        << " ("
+                        << accounts.at(usernameOfPost).tweets.at(index).getTime()
+                        << ") : "
+                        << accounts.at(usernameOfPost).tweets.at(index).getText()
+                        << '\n';
+                        t.sendMessage(o.str());
+                    }
+                    else
+                    {
+                        t.throwError("couldnt find any tweet with this index.");
+                    }
                 }
                 else
                 {
-                    t.throwError("couldnt find any tweet with this index.");
+                    t.throwError("User not found.");
                 }
-            }
-            else
-            {
-                t.throwError("User not found.");
             }
         }
 
-        else if( args.at(0).at(0) == '@' && args.size() == 3)
+        else if( args.at(0).at(0) == '@' && argsize == 3)
         {
             //its @username:index:likes command
             args.at(0).erase(0,1);
@@ -780,7 +781,7 @@ void Twitterak::login(string& username , Terminal t){
         else if(args.at(0) == "like")
         {
             //its like @username:index command
-            if(args.size() == 3)
+            if(argsize == 3)
             {
                 args.at(1).erase(0,1);
 
@@ -820,7 +821,7 @@ void Twitterak::login(string& username , Terminal t){
         else if(args.at(0) == "dislike")
         {
             //its like @username:index command
-            if(args.size() == 3)
+            if(argsize == 3)
             {
                 args.at(1).erase(0,1);
 
