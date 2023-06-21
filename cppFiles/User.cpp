@@ -99,7 +99,7 @@ void User::set_country (string country){
     this -> country = country;
 }
 
-string User:: get_country (){
+string User:: get_country () const{
     return country;
 } 
 
@@ -107,7 +107,8 @@ void User::set_link (string link){
     this -> link = link;
 }
 
-string User::get_link (){
+ 
+string User::get_link () const{
     return link;
 }
 
@@ -121,14 +122,14 @@ Date User::get_DateOfBirth() const{
 
 void User::set_phoneNumber(string phone){
     int size = phone.size();
-    /*if (phone.size() == 12){
+    if (phone.size() == 12){
         phoneNumber = phone;
     }
     else {
         throw invalid_argument (
-            "The phone number is incorrect."
+            "The phone number is incorrect.The phone number must be 12 digits."
         );
-    }*/
+    }
     for (size_t i=0 ; i<size ; i++){
         if ( !isdigit(phone[i]) ){
             throw invalid_argument (

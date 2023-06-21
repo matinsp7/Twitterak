@@ -41,8 +41,8 @@ void Twitterak::signup (Terminal t , string username = ""){
         }
     }
 
-    // string name = t.getStringValue("Name ");
-    // new_user.set_name(name);
+    string name = t.getStringValue("Name ");
+    new_user.set_name(name);
 
     string gender = t.getStringValue("Gender (man/woman) ");
     gender = t.toLower(gender);
@@ -57,14 +57,14 @@ void Twitterak::signup (Terminal t , string username = ""){
     string password = t.getStringValue("Password");
     new_user.set_password(password);
 
-    // string Phonenumber = t.getStringValue("Phone number");
-    // try {
-    //     new_user.set_phoneNumber(Phonenumber);
-    // }
-    // catch (invalid_argument &err){
-    //     t.throwError (err.what());
-    //     return ;
-    // }
+    string Phonenumber = t.getStringValue("Phone number");
+    try {
+        new_user.set_phoneNumber(Phonenumber);
+    }
+    catch (invalid_argument &err){
+        t.throwError (err.what());
+        return ;
+    }
 
     accounts[username] =  new_user;
 
@@ -814,34 +814,39 @@ void Twitterak::login(string& username , Terminal t){
 
         else if( args.at(0).at(0) == '@' && argsize == 3)
         {
+            args[2] = t.toLower(args[2]);
             //its @username:index:likes command
             args.at(0).erase(0,1);
-
-            string usernameOfPost = args.at(0);
-            int index = stoi(args.at(1));
-            if(accounts.find(usernameOfPost) != accounts.end())
-            {
-                if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+            if (!isdigit(args[1][0]) || args[2] != "likes"){
+                t.throwError("Undefined command.");
+            }
+            else {
+                string usernameOfPost = args.at(0);
+                int index = stoi(args.at(1));
+                if(accounts.find(usernameOfPost) != accounts.end())
                 {
-                    vector<int>& likes = accounts.at(usernameOfPost).tweets.at(index).likes;
-                    t.sendMessage("likes : " + to_string(likes.size()) + '\n');
-                    for (int i=0 ; i < likes.size() ; i++){
-                        for(auto it = accounts.begin(); it != accounts.end(); it++)
-                        {
-                            if(it->second.get_ID() == likes[i])
+                    if(accounts.at(usernameOfPost).tweets.find(index) != accounts.at(usernameOfPost).tweets.end())
+                    {
+                        vector<int>& likes = accounts.at(usernameOfPost).tweets.at(index).likes;
+                        t.sendMessage("likes : " + to_string(likes.size()) + '\n');
+                        for (int i=0 ; i < likes.size() ; i++){
+                            for(auto it = accounts.begin(); it != accounts.end(); it++)
                             {
-                                t.sendMessage('@' + it->second.get_username() + '\n');
+                                if(it->second.get_ID() == likes[i])
+                                {
+                                    t.sendMessage('@' + it->second.get_username() + '\n');
+                                }
                             }
                         }
                     }
+                    else {
+                        t.sendMessage("The user has no post with this index." + '\n');
+                    }
                 }
-                else {
-                    t.sendMessage("The user has no post with this index.");
+                else
+                {
+                    t.throwError("User not found.");
                 }
-            }
-            else
-            {
-                t.throwError("User not found.");
             }
         }
 
@@ -982,7 +987,7 @@ void Twitterak::login(string& username , Terminal t){
             break;
         }
         
-        else if (args[0] == "exit"){
+        else if (args[0] == "exit" || args[0] == "quit" || args[0] == "q"){
             exit (0);
         }
 
@@ -1057,10 +1062,12 @@ void Twitterak::run(){
         {
             system("cls");
         }
-        else if (args[0] == "exit"){
+        else if (args[0] == "exit" || args[0] == "quit" || args[0] == "q")
+        {
             exit (0);
         }
-        else {
+        else 
+        {
             t.throwError("Undefined command.");
         }
     }

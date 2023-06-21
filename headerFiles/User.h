@@ -20,9 +20,9 @@ class User {
     void set_bio(std::string);
     std::string get_bio() const;
     void set_country (std::string);
-    std::string get_country ();
+    std::string get_country () const;
     void set_link (std::string);
-    std::string get_link ();
+    std::string get_link () const;
     void set_dateOfBirth(int , int , int , Terminal);
     Date get_DateOfBirth() const;
     void set_phoneNumber(std::string);
