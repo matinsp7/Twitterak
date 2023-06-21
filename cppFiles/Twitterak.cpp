@@ -431,11 +431,10 @@ void Twitterak::login(string& username , Terminal t){
                     }
                     splashScreen screen;
                     if (accounts[args.at(1)].get_gender() == "man"){
-                        //screen.runSplashScreen("man.txt",cl,"",cl , t);
                         screen.printSplashTextUpDownAnimation("man.txt",cl,t);
                     }
                     else {
-                        screen.runSplashScreen("woman.txt",cl,"",cl , t);
+                        screen.printSplashTextUpDownAnimation("woman.txt",cl,t);
                     }
                     profile (args.at(1) , accounts , t);
                     SetConsoleTextAttribute(hOutput,7);
@@ -462,12 +461,19 @@ void Twitterak::login(string& username , Terminal t){
                         editP = t.getStringValue("What do you want to change ? ");
                         editP = t.toLower(editP);
                         if (editP != "date of birth" && editP != "header"){
-                            //newP = t.getStringValue ("Enter the new change. ");
-                            vector<string> input = t.getCommand("$ Enter the new change : ");
-                            for(unsigned d{0}; d < input.size(); d++){
-                                newP += input[d];
-                                newP += ' ';
+                            if(editP != "link")
+                            {
+                                vector<string> input = t.getCommand("$ Enter the new change : ");
+                                for(unsigned d{0}; d < input.size(); d++){
+                                    newP += input[d];
+                                    newP += ' ';
+                                }
                             }
+                            else
+                            {
+                                newP = t.getStringValue ("Enter the new change. ");
+                            }
+
                         }
                     }
                     else if (argsize == 4)
