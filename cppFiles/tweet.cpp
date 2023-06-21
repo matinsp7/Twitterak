@@ -6,9 +6,10 @@
 using namespace std;
 
 //arguments: text of tweet
-Tweet::Tweet(string& text)
+Tweet::Tweet(string& text, string time)
 {
     tweetText = text;
+    tweetTime = time;
 }
 
 void Tweet::setText(string& text){
@@ -53,4 +54,9 @@ bool Tweet::dislikeTweet(User* user)
     }
 
     return 0;
+}
+
+std::string Tweet::getTime() const
+{
+    return tweetTime;
 }

@@ -8,13 +8,15 @@ class Tweet{
 public:
 
     //arguments: text of tweet
-    Tweet(std::string& text);
+    Tweet(std::string& text, std::string time);
 
     //set tweet text
     void setText(std::string& text);
 
     //returns tweet text
     std::string getText() const;
+
+    std::string getTime() const;
 
     //arguments: username of who liked tweet
     //returns true if tweet liked
@@ -29,5 +31,7 @@ private:
 
     //the complete text of tweet
     std::string tweetText;
+
+    std::string tweetTime;
 };
 #endif
