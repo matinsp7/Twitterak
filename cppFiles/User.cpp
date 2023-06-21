@@ -66,6 +66,13 @@ void User::set_username(string username , map<string, User> accounts)
         );
     }
 
+    if (username == "signup" || username =="login" || username == "logout" || username == "tweet"
+    || username == "profile"|| username == "retweet" || username == "usernamr" || username == "password"
+    || username =="country" || username == "birthdate" || username == "account" || username == "tweet"
+    || username == "tweets"){
+        throw invalid_argument ("This is a reserved word. You can not choos it as your username.");
+    }
+
     this -> username = username;
 }
 

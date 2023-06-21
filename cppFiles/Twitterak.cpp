@@ -720,8 +720,27 @@ void Twitterak::login(string& username , Terminal t){
         {
             //its @username command
             args.at(0).erase(0 , 1);
+            if (args[0] == "me"){
+                map<unsigned, Tweet> tweets = accounts[username].tweets;
+                string message;
+                for (auto itr = (tweets).begin(); itr != (tweets).end(); ++itr) {
+                    ostringstream o;
+                    o << itr->first
+                    << " ("
+                    << itr->second.getTime()
+                    << ") : "
+                    << itr->second.getText()
+                    << '\n';
+                    message = o.str();
+                    t.sendMessage(message);
+                }    
 
-            if(accounts.find(args.at(0)) != accounts.end())
+                if(message.length() == 0)
+                {
+                    t.sendMessage("You have not shared a tweet yet.\n");
+                }      
+            }
+            else if(accounts.find(args.at(0)) != accounts.end())
             {
                 
                 map<unsigned, Tweet> tweets = accounts[args.at(0)].tweets;
