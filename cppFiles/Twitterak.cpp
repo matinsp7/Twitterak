@@ -16,17 +16,13 @@ using namespace std;
 map<string, User> Twitterak::accounts;
 map <string, map<int, vector<int>> > Twitterak::sharps;
 
-void Twitterak::signup (Terminal t , string un = "signup"){
+void Twitterak::signup (Terminal t , string username = ""){
     User new_user;
 
     t.sendMessage("Thank you for your choice.\n");
 
-    string username = un;
-    if (username == "signup"){
+    if (username.empty()){
         username = t.getStringValue("Username ");
-    }
-    else {
-        username = un;
     }
     while (1) {
         if (username.at(0) == '@'){    //to remove @
@@ -617,15 +613,34 @@ void Twitterak::login(string& username , Terminal t){
         }
 
 
-        else if(args.at(0) == "delete" && args.size() == 3 && args.at(1) == "tweet")
+        else if(args.at(0) == "delete")
         {
-            if(deleteTweet((*user), stoi(args.at(2)), sharps))
-            {
-                t.sendSuccessMessage("Tweet deleted successful.");
+            args[1] == t.toLower(args[1]);
+            int argsize = args.size();
+            if (argsize == 3 && args[1] == "tweet"){
+                if(deleteTweet((*user), stoi(args.at(2)), sharps))
+                {
+                    t.sendSuccessMessage("Tweet deleted successful.");
+                }
+                else
+                {
+                    t.throwError("The tweet deletation proccess failed.");
+                }
             }
-            else
-            {
-                t.throwError("The tweet deletation proccess failed.");
+            else if (argsize == 2 && args[1] == "account"){
+                string ans = t.sendQuestion("This operation cannot bereversed in any way. Are you sure?(y/n) ");
+                ans = t.toLower(ans);
+                if ( ans == "y"){
+                    accounts.erase(username);
+                    break;
+                }
+                else if (ans == "n"){}
+                else {
+                    t.throwError("Undefined command.");
+                }
+            }
+            else {
+                t.throwError("Undefined command.");
             }
         }
 
@@ -919,6 +934,9 @@ void Twitterak::run(){
             }
             else if (argsize == 3){
                 check_validation(t , args[1] , args[2]);
+            }
+            else {
+                t.throwError("Undefined command.");
             }
         }
         else if(args.at(0) == "help")
