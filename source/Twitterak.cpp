@@ -6,9 +6,9 @@
 #include <map>
 #include <chrono>
 
-#include "../headerFiles/splashScreen.h"
-#include "../headerFiles/User.h"
-#include "../headerFiles/tweet.h"
+#include "../include/splashScreen.h"
+#include "../include/User.h"
+#include "../include/tweet.h"
 
 
 using namespace std;
