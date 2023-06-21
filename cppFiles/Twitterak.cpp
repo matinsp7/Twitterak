@@ -58,8 +58,8 @@ void Twitterak::signup (Terminal t , string un = "signup"){
         return ;
     }
 
-    // string password = t.getStringValue("Password");
-    // new_user.set_password(password);
+    string password = t.getStringValue("Password");
+    new_user.set_password(password);
 
     // string Phonenumber = t.getStringValue("Phone number");
     // try {
@@ -81,18 +81,20 @@ void Twitterak::signup (Terminal t , string un = "signup"){
 //--------------------------------------------------------------------------------------------------
 
 
-void Twitterak::check_validation (Terminal t){
-    string username;
-    string password;
+void Twitterak::check_validation (Terminal t , string username = "", string password = ""){
+    
+    if (username.empty()){
+        username = t.getStringValue("username");
+    }
 
-    username = t.getStringValue("username");
+    if (password.empty()){
+        password = t.getStringValue("password");
+    }
 
     if (username[0] == '@'){    //to remove @
-        username.erase(0);
+            username.erase(0 , 1);
     }
     username = t.toLower(username);
-
-    password = t.getStringValue("password");
 
     if (accounts.find(username) != accounts.end())
     {
@@ -102,12 +104,12 @@ void Twitterak::check_validation (Terminal t){
         }
         else
         {
-            t.throwError("Usename or Password is incorrect !");
+            t.throwError("Usename or Password is incorrect.");
         }
     }
     else
     {
-        t.throwError("Usename or Password is incorrect !");
+        t.throwError("Usename or Password is incorrect.");
     }
 
 }
@@ -452,6 +454,7 @@ void Twitterak::login(string& username , Terminal t){
                     else if (editP == "gender"){
                         try {
                             user -> set_gender(newP);
+                            t.sendSuccessMessage ("Your gender has been successfully changed.");
                         }
                         catch (invalid_argument &err) {
                             t.throwError (err.what());
@@ -461,7 +464,7 @@ void Twitterak::login(string& username , Terminal t){
 
                     else if (editP == "username")
                     {
-                        if (newP[0] == '@') ////to remove @
+                        if (newP[0] == '@') //to remove @
                         {    
                             newP.erase(0 , 1);
                         }
@@ -494,6 +497,7 @@ void Twitterak::login(string& username , Terminal t){
 
                     else if (editP == "country"){
                         user -> set_country(newP);
+                        t.sendSuccessMessage ("Your country has been successfully changed.");
                     }
 
                     else if (editP == "link"){
@@ -529,6 +533,7 @@ void Twitterak::login(string& username , Terminal t){
                         if (currentPass == user -> get_password())
                         {
                             user -> set_password(newP);
+                             t.sendSuccessMessage ("Your password has been successfully changed.");
                         }
                         else 
                         {
@@ -905,7 +910,16 @@ void Twitterak::run(){
         }
         else if (args[0] == "login")
         {
-            check_validation(t);
+            int argsize = args.size();
+            if (argsize == 1){
+                check_validation(t);
+            }
+            else if (argsize == 2){
+                check_validation(t , args[1]);
+            }
+            else if (argsize == 3){
+                check_validation(t , args[1] , args[2]);
+            }
         }
         else if(args.at(0) == "help")
         {

@@ -9,7 +9,7 @@
 class Twitterak {
     public:
     void signup (Terminal t , std::string);
-    void check_validation (Terminal t);
+    void check_validation (Terminal , std::string , std::string);
     void help(Terminal&);
     Tweet tweet(std::string& text,User& user, unsigned& tweetIndex);
     bool deleteTweet(User& user, unsigned index, std::map < std::string, std::map< int,std::vector<int> > >& sharps);
