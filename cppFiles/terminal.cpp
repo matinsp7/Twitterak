@@ -30,19 +30,24 @@ using namespace std;
         int begin{-1};
         int size = line.length();
 
+        bool emptyQuotation = 1;
+
         for(unsigned i{0}; i < size; i++)
         {
             if(inQuotation)
             {                       //i points to an element that is in quotation
                 if(line[i] == '"' || line[i] == '\'')
                 {                        //its the end of text in quotation
+                    if(emptyQuotation == 0)
+                    {
+                        letter = line.substr(begin+1, i-begin-1);
+                        args.push_back(letter);
+                    }
                     inQuotation = 0;
-                    letter = line.substr(begin+1, i-begin-1);
-                    args.push_back(letter);
                     begin = -1;
                 }
                 else if(i == size-1)
-                {                         //line ends but quotation is still open
+                {                   //line ends but quotation is still open
                     letter = line.substr(begin+1, i-begin);
                     letter += '\n';
                     std::string tmp;
@@ -50,6 +55,9 @@ using namespace std;
                     input.ignore();
                     letter += tmp;
                     args.push_back(letter);
+                }else if(line[i] != ' ')
+                {
+                    emptyQuotation = 0;
                 }
 
             }
@@ -83,7 +91,7 @@ using namespace std;
                         args.push_back(letter);
                         begin = -1;
                     }
-                    else
+                    else if(line[i] != ' ')
                     {
                         letter = line[i];
                         args.push_back(letter);
@@ -138,7 +146,8 @@ using namespace std;
 
         int val;
         input >> val;
-
+        input.ignore();
+        
         return val;
     }
 
