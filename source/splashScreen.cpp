@@ -24,7 +24,7 @@ void splashScreen::printLine(std::ifstream& Reader,int color,Terminal t){
 
 void splashScreen::printSplashTextUpDownAnimation(std::string address,int color, Terminal t){
     hOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-    std::ifstream Reader(address);                      //Open file
+    std::ifstream Reader("../res/" + address);                      //Open file
 
     if (Reader)                                        //Check if everything is good
     {
@@ -44,7 +44,7 @@ void splashScreen::printSplashTextUpDownAnimation(std::string address,int color,
 
 void splashScreen::printGuideMessage(std::string messageTxtAddress,int messageTxtColor, Terminal t){
     SetConsoleTextAttribute(hOutput,messageTxtColor);
-    std::ifstream reader(messageTxtAddress);
+    std::ifstream reader("../res/" + messageTxtAddress);
 
     if (reader)                                        //Check if everything is good
     {
