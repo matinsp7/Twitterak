@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
-#include "../headerFiles/tweet.h"
-#include "../headerFiles/user.h"
+#include "../include/tweet.h"
+#include "../include/user.h"
 
 using namespace std;
 
