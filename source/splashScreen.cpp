@@ -7,8 +7,8 @@
 
 #endif
 
-#include "../headerFiles/terminal.h"
-#include "../headerFiles/splashScreen.h"
+#include "../include/terminal.h"
+#include "../include/splashScreen.h"
 
 splashScreen::splashScreen(){}
 
