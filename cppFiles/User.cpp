@@ -104,6 +104,14 @@ string User:: get_country () const{
 } 
 
 void User::set_link (string link){
+    if(link.substr(0,4) != "http")
+    {
+        string prefix = "https://";
+        link = prefix + link;
+    }else if(link.substr(0,5) == "http:")
+    {
+        link.insert(4,"s");
+    }
     this -> link = link;
 }
 
