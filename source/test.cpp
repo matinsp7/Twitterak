@@ -1,4 +1,4 @@
-#include "../headerFiles/Twitterak.h"
+#include "../include/Twitterak.h"
 
 int main (){
     Twitterak app;
