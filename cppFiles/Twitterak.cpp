@@ -128,6 +128,38 @@ inline void profile (string& username , map<string, User> accounts, Terminal t){
     t.sendMessage("Header : " + user.get_header()+'\n');
 }
 
+inline bool ageVerifiction(Date date)
+{
+    time_t theTime = time(NULL);
+    struct tm *aTime = localtime(&theTime);
+
+    int day = aTime->tm_mday;
+    int month = aTime->tm_mon + 1;
+    int year = aTime->tm_year + 1900;
+
+    if(year - date.get_year() < 18)
+    {
+        return 0;
+    }
+    else if(year - date.get_year() == 18)
+    {
+        cout << date.get_year() + 18 << " == " << year << '\n';
+        if(date.get_month() < month)
+        {
+            return 0;
+        }
+        else if(date.get_month() == month)
+        {
+            if(date.get_day() < day)
+            {
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
+
+
 //argument0: the text that contains sharps
 //returns a vector of sharps without sharp character(#)
 inline vector<string> findSharpsInText(string text)
@@ -399,7 +431,8 @@ void Twitterak::login(string& username , Terminal t){
                     }
                     splashScreen screen;
                     if (accounts[args.at(1)].get_gender() == "man"){
-                        screen.runSplashScreen("man.txt",cl,"",cl , t);
+                        //screen.runSplashScreen("man.txt",cl,"",cl , t);
+                        screen.printSplashTextUpDownAnimation("man.txt",cl,t);
                     }
                     else {
                         screen.runSplashScreen("woman.txt",cl,"",cl , t);
@@ -425,8 +458,14 @@ void Twitterak::login(string& username , Terminal t){
                         profile(username , accounts, t);
                         editP = t.getStringValue("What do you want to change? ");
                         editP = t.toLower(editP); // tolowercase edetP
+
                         if (editP != "date of birth" && editP != "header"){
-                            newP = t.getStringValue ("Enter the new change. ");
+                            //newP = t.getStringValue ("Enter the new change. ");
+                            vector<string> input = t.getCommand("$ Enter the new change : ");
+                            for(unsigned d{0}; d < input.size(); d++){
+                                newP += input[d];
+                                newP += ' ';
+                            }
                         }
                     }
                     else if (args.size() == 4)
@@ -474,7 +513,7 @@ void Twitterak::login(string& username , Terminal t){
                     else if (editP == "bio")
                     {
                         try {
-                            user -> set_bio (newP , t);
+                            user -> set_bio (newP);
                             t.sendSuccessMessage ("Your bio has been successfully changed.");
                         }
                         catch (invalid_argument &a) {
@@ -485,7 +524,7 @@ void Twitterak::login(string& username , Terminal t){
 
                     else if (editP == "date of birth")
                     {
-                        user -> set_dateOfBirth (t);
+                       user -> set_dateOfBirth (t);
                     }
 
 
@@ -538,6 +577,12 @@ void Twitterak::login(string& username , Terminal t){
 
                 else if(args.at(1) == "tweet" && args.size() == 3)
                 {
+                    //user must be more than 18 years old
+                    if(ageVerifiction(user->get_DateOfBirth()) == 0){
+                        t.throwError("Sorry you are kid and can't edit your tweet.");
+                        continue;
+                    }
+                    
                     unsigned index = stoi(args.at(2));
                     if((*user).tweets.find(index) != (*user).tweets.end())
                     {
@@ -553,6 +598,10 @@ void Twitterak::login(string& username , Terminal t){
 
                         editTweet((*user).tweets.at(index), index, tweetText, (*user), sharps);
                         t.sendSuccessMessage("Your tweet has been successfully edit.");
+                    }
+                    else
+                    {
+                        t.throwError("Tweet not found!");
                     }
                 } 
                 else {
@@ -722,9 +771,17 @@ void Twitterak::login(string& username , Terminal t){
                     int size = it->second.size();
                     for(int i{0}; i < size; i++) //vector size
                     {
-                        
-                        string message = tmp.get_username() + " " +  to_string(it->second.at(i)) + " :" + tmp.tweets.at(it->second.at(i)).getText() + '\n';
-                        
+                        string message;
+                        ostringstream o;
+                        o << tmp.get_username() 
+                        << " "
+                        << it->second.at(i)
+                        << " ("
+                        << tmp.tweets.at(it->second.at(i)).getTime()
+                        << ") : "
+                        << tmp.tweets.at(it->second.at(i)).getText()
+                        << '\n';
+                        message = o.str();
                         t.sendMessage(message);
                     }
                 }
