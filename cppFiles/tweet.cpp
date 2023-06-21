@@ -27,13 +27,13 @@ bool Tweet::likeTweet(User* user)
     int Id = user->get_ID();
     for(int i{0}; i < size ; i++)
     {
-        if(likes[i]->get_ID() == Id)
+        if(likes[i] == Id)
         {
             return 0;
         }
     }
 
-    likes.push_back(user);
+    likes.push_back(Id);
     return 1;
 }
 
@@ -41,9 +41,11 @@ bool Tweet::likeTweet(User* user)
 //returns true if tweet disliked
 bool Tweet::dislikeTweet(User* user)
 {
-    for(int i{0}; i < likes.size(); i++)
+    int size = likes.size();
+    int Id = user->get_ID();
+    for(int i{0}; i < size ; i++)
     {
-        if(likes[i] == user)
+        if(likes[i] == Id)
         {
             likes.erase(likes.begin() + i);
             return 1;

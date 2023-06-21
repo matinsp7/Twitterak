@@ -22,8 +22,8 @@ public:
     bool likeTweet(User* user);
 
     bool dislikeTweet(User* user);
-    //vector of usernames that liked tweet
-    std::vector<User*> likes;
+    //vector of ID that liked tweet
+    std::vector<int> likes;
     
 private:
 

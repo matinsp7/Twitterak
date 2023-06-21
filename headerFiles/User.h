@@ -41,5 +41,6 @@ private:
     std::string password;
     std::string header {"white"};
     int ID;
+    
 };
 #endif
