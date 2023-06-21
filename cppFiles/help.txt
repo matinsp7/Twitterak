@@ -1,4 +1,19 @@
-SIGNUP     signup command
-LOGIN      login command
-HELP       help command
-EXIT       exit from app
+SIGNUP                  signup in app by entering essential details.
+LOGIN                   login in app by entering username and password.
+HELP                    displays a brief description about commands.
+PROFILE                 displays personal profile.
+ME                      displays personal profile.
+PROFILE @USERNAME       displays someone's profile.
+EDIT PROFILE            edit profile information.
+TWEET                   post a tweet.
+EDIT TWEET              edit a tweet text by index.
+DELETE TWEET            delete a tweet by index.
+LIKE                    like a tweet by entering username and index.
+DISLIKE                 dislike a tweet by entering username and index.
+@USERNAME               displays all tweets of a person by entering his/her username.
+@USERNAME:INDEX         displays a tweet by entering index and username of its owner.
+@USERNAME:INDEX:LIKES   displays the number of likes and those who have liked.
+#HASHTAG                displays all tweets containing this hashtag.
+LOGOUT                  logout
+CLS                     clears screen.
+EXIT                    exit from app.
